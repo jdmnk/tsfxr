@@ -1,5 +1,7 @@
 This is a game sound effects generator app based on the amazing [jsfxr](https://github.com/chr15m/jsfxr), but built with React and Next.js.
 
+## About
+
 ## Getting Started
 
 To run the development server:

@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Params, SoundEffect } from "@/lib/sfxr/sfxr";
 import { Button } from "./ui/button";
+import { useDebouncedCallback } from "use-debounce";
 
 // Assume external libraries (riffwave.js, sfxr.js) are loaded globally,
 // so that the globals Params and SoundEffect exist.
@@ -29,6 +30,19 @@ export function SoundGenerator() {
   );
   const clipping = sound.clipping;
 
+  const play = (p: Params, noregen?: boolean) => {
+    if (!noregen) {
+      // Optionally update location.hash if desired.
+      const newSound = new SoundEffect(p).generate();
+      newSound.getAudio().play();
+    } else {
+      sound?.getAudio().play();
+    }
+  };
+
+  // To be used for example with sliders.
+  const debouncedPlay = useDebouncedCallback(play, 300, { leading: true });
+
   const updateParam = <K extends keyof Params>(
     key: K,
     value: Params[K],
@@ -37,7 +51,7 @@ export function SoundGenerator() {
     const newParams = params.clone();
     newParams[key] = value;
     updateUi(newParams);
-    play(newParams);
+    debouncedPlay(newParams);
     setParams(newParams);
   };
 
@@ -54,15 +68,6 @@ export function SoundGenerator() {
     When set to true, it tells the play function not to generate a new sound, but rather to use the existing one. 
     This allows you to simply play the current sound without recalculating or updating it.
   */
-  const play = (p: Params, noregen?: boolean) => {
-    if (!noregen) {
-      // Optionally update location.hash if desired.
-      const newSound = new SoundEffect(p).generate();
-      newSound.getAudio().play();
-    } else {
-      sound?.getAudio().play();
-    }
-  };
 
   // Generate a new sound.
   const gen = (fx: string, shouldPlay: boolean = true) => {
