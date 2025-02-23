@@ -1360,7 +1360,7 @@ var units = {
     // run into a scenario where plain modules depend on CommonJS
     // *and* I happen to be loading in a CJS browser environment
     // but I'm including it for the sake of being thorough
-    RIFFWAVE = require("./sfxr/riffwave.js");
+    RIFFWAVE = require("./riffwave.js");
     module.exports = root.jsfxr = factory(RIFFWAVE);
   } else {
     root.jsfxr = factory(root.RIFFWAVE);
