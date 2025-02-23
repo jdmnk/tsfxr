@@ -96,7 +96,8 @@ export function SoundGenerator() {
 
   // On mount, generate a default sound.
   useEffect(() => {
-    const hash = window.location.hash.substring(1) || "pickupCoin";
+    const hash = window.location.hash || "pickupCoin";
+
     gen(hash, false); // False = Don't play on mount
   }, []);
 
