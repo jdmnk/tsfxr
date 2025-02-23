@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Params, SoundEffect } from "@/lib/sfxr/sfxr";
+import { Button } from "./ui/button";
 
 // Assume external libraries (riffwave.js, sfxr.js) are loaded globally,
 // so that the globals Params and SoundEffect exist.
@@ -11,13 +12,34 @@ const SAMPLE_SIZE = 8;
 
 export function SoundGenerator() {
   // Keep params and sound in state.
-  const [params, setParams] = useState<any>(new Params());
-  const [sound, setSound] = useState<any>(null);
-  const [b58, setB58] = useState<string>("");
-  // For stats display.
-  const [fileSize, setFileSize] = useState<string>("");
-  const [numSamples, setNumSamples] = useState<string>("");
-  const [clipping, setClipping] = useState<string>("");
+  const [params, setParams] = useState<Params>(new Params());
+  const b58 = useMemo(() => params.toB58(), [params]);
+  const sound = useMemo(() => new SoundEffect(params).generate(), [params]);
+  const fileSize = useMemo(
+    () => Math.round(sound.wav.length / 1024) + "kB",
+    [sound]
+  );
+  const numSamples = useMemo(
+    () =>
+      (
+        sound.header.subChunk2Size /
+        (sound.header.bitsPerSample >> 3)
+      ).toString(),
+    [sound]
+  );
+  const clipping = sound.clipping;
+
+  const updateParam = <K extends keyof Params>(
+    key: K,
+    value: Params[K],
+    shouldPlay: boolean = true
+  ) => {
+    const newParams = params.clone();
+    newParams[key] = value;
+    updateUi(newParams);
+    play(newParams);
+    setParams(newParams);
+  };
 
   // Update UI state based on params.
   const updateUi = (p: any) => {
@@ -27,32 +49,27 @@ export function SoundGenerator() {
   };
 
   // Play sound and update stats.
-  const play = (p: any, noregen?: boolean) => {
+  /*
+    The noregen flag acts as a "no regeneration" switch. 
+    When set to true, it tells the play function not to generate a new sound, but rather to use the existing one. 
+    This allows you to simply play the current sound without recalculating or updating it.
+  */
+  const play = (p: Params, noregen?: boolean) => {
     if (!noregen) {
-      const newB58 = p.toB58();
-      setB58(newB58);
       // Optionally update location.hash if desired.
       const newSound = new SoundEffect(p).generate();
-      setSound(newSound);
-      setFileSize(Math.round(newSound.wav.length / 1024) + "kB");
-      setNumSamples(
-        (
-          newSound.header.subChunk2Size /
-          (newSound.header.bitsPerSample >> 3)
-        ).toString()
-      );
-      setClipping(newSound.clipping);
+      newSound.getAudio().play();
+    } else {
+      sound?.getAudio().play();
     }
-    // Play audio.
-    sound?.getAudio().play();
   };
 
   // Generate a new sound.
-  const gen = (fx: string) => {
-    const newParams = new Params();
-    newParams.sound_vol = SOUND_VOL;
-    newParams.sample_rate = SAMPLE_RATE;
-    newParams.sample_size = SAMPLE_SIZE;
+  const gen = (fx: string, shouldPlay: boolean = true) => {
+    const newParams = params.clone();
+    // newParams.sound_vol = SOUND_VOL;
+    // newParams.sample_rate = SAMPLE_RATE;
+    // newParams.sample_size = SAMPLE_SIZE;
     if (fx.startsWith("#")) {
       newParams.fromB58(fx.slice(1));
       // Download name becomes "random.wav"
@@ -66,15 +83,16 @@ export function SoundGenerator() {
     }
     setParams(newParams);
     updateUi(newParams);
-    play(newParams);
+    shouldPlay && play(newParams);
   };
 
   // Mutate current parameters.
   const mut = () => {
-    params.mutate();
-    setParams({ ...params });
-    updateUi(params);
-    play(params);
+    const newp = params.clone();
+    newp.mutate();
+    setParams(newp);
+    updateUi(newp);
+    play(newp);
   };
 
   // Copy b58 code to clipboard.
@@ -85,7 +103,7 @@ export function SoundGenerator() {
   // On mount, generate a default sound.
   useEffect(() => {
     const hash = window.location.hash.substring(1) || "pickupCoin";
-    gen(hash);
+    gen(hash, false); // Don't play on mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -96,37 +114,36 @@ export function SoundGenerator() {
       {/* Generator Section */}
       <div id="generators">
         <h2>Generator</h2>
-        <button onClick={() => gen("random")}>Random</button>
+        <Button onClick={() => gen("random")}>Random</Button>
         <br />
         <br />
-        <button onClick={() => gen("pickupCoin")}>Pickup/coin</button>
+        <Button onClick={() => gen("pickupCoin")}>Pickup/coin</Button>
         <br />
-        <button onClick={() => gen("laserShoot")}>Laser/shoot</button>
+        <Button onClick={() => gen("laserShoot")}>Laser/shoot</Button>
         <br />
-        <button onClick={() => gen("explosion")}>Explosion</button>
+        <Button onClick={() => gen("explosion")}>Explosion</Button>
         <br />
-        <button onClick={() => gen("powerUp")}>Powerup</button>
+        <Button onClick={() => gen("powerUp")}>Powerup</Button>
         <br />
-        <button onClick={() => gen("hitHurt")}>Hit/hurt</button>
+        <Button onClick={() => gen("hitHurt")}>Hit/hurt</Button>
         <br />
-        <button onClick={() => gen("jump")}>Jump</button>
+        <Button onClick={() => gen("jump")}>Jump</Button>
         <br />
-        <button onClick={() => gen("click")}>Click</button>
+        <Button onClick={() => gen("click")}>Click</Button>
         <br />
-        <button onClick={() => gen("blipSelect")}>Blip/select</button>
+        <Button onClick={() => gen("blipSelect")}>Blip/select</Button>
         <br />
-        <button onClick={() => gen("synth")}>Synth</button>
+        <Button onClick={() => gen("synth")}>Synth</Button>
         <br />
-        <button onClick={() => gen("tone")}>Tone</button>
+        <Button onClick={() => gen("tone")}>Tone</Button>
         <br />
         <br />
-        <button onClick={mut}>Mutate</button>
+        <Button onClick={mut}>Mutate</Button>
         <br />
         <p>
-          <button onClick={() => play(params, true)}>Play</button>
+          <Button onClick={() => play(params, true)}>Play</Button>
           <br />
         </p>
-        <input id="copybuffer" value={b58} readOnly />
       </div>
 
       {/* Manual Settings Section */}
@@ -141,10 +158,7 @@ export function SoundGenerator() {
               value="0"
               checked={params.wave_type === 0}
               onChange={() => {
-                params.wave_type = 0;
-                updateUi(params);
-                play(params);
-                setParams({ ...params });
+                updateParam("wave_type", 0);
               }}
             />
             <label htmlFor="square">Square</label>
@@ -155,10 +169,7 @@ export function SoundGenerator() {
               value="1"
               checked={params.wave_type === 1}
               onChange={() => {
-                params.wave_type = 1;
-                updateUi(params);
-                play(params);
-                setParams({ ...params });
+                updateParam("wave_type", 1);
               }}
             />
             <label htmlFor="sawtooth">Sawtooth</label>
@@ -169,10 +180,7 @@ export function SoundGenerator() {
               value="2"
               checked={params.wave_type === 2}
               onChange={() => {
-                params.wave_type = 2;
-                updateUi(params);
-                play(params);
-                setParams({ ...params });
+                updateParam("wave_type", 2);
               }}
             />
             <label htmlFor="sine">Sine</label>
@@ -183,10 +191,7 @@ export function SoundGenerator() {
               value="3"
               checked={params.wave_type === 3}
               onChange={() => {
-                params.wave_type = 3;
-                updateUi(params);
-                play(params);
-                setParams({ ...params });
+                updateParam("wave_type", 3);
               }}
             />
             <label htmlFor="noise">Noise</label>
@@ -207,11 +212,12 @@ export function SoundGenerator() {
                   id="p_env_attack"
                   min={0}
                   max={1000}
-                  value={params.env_attack ? params.env_attack * 1000 : 0}
+                  value={params.p_env_attack ? params.p_env_attack * 1000 : 0}
                   onChange={(e) => {
-                    params.env_attack = parseFloat(e.target.value) / 1000;
-                    setParams({ ...params });
-                    play(params);
+                    updateParam(
+                      "p_env_attack",
+                      parseFloat(e.target.value) / 1000
+                    );
                   }}
                 />
               </td>
@@ -224,11 +230,12 @@ export function SoundGenerator() {
                   id="p_env_sustain"
                   min={0}
                   max={1000}
-                  value={params.env_sustain ? params.env_sustain * 1000 : 0}
+                  value={params.p_env_sustain ? params.p_env_sustain * 1000 : 0}
                   onChange={(e) => {
-                    params.env_sustain = parseFloat(e.target.value) / 1000;
-                    setParams({ ...params });
-                    play(params);
+                    updateParam(
+                      "p_env_sustain",
+                      parseFloat(e.target.value) / 1000
+                    );
                   }}
                 />
               </td>
@@ -243,7 +250,7 @@ export function SoundGenerator() {
       {/* Export Section */}
       <div id="export">
         <h2>Sound</h2>
-        <button onClick={() => play(params, true)}>Play</button>
+        <Button onClick={() => play(params, true)}>Play</Button>
         <br />
         <div id="soundexport">
           Download:
@@ -280,9 +287,7 @@ export function SoundGenerator() {
             max={1000}
             value={params.sound_vol ? params.sound_vol * 1000 : 0}
             onChange={(e) => {
-              params.sound_vol = parseFloat(e.target.value) / 1000;
-              setParams({ ...params });
-              play(params);
+              updateParam("sound_vol", parseFloat(e.target.value) / 1000);
             }}
           />
           <br />
@@ -297,9 +302,7 @@ export function SoundGenerator() {
               value="44100"
               checked={params.sample_rate === 44100}
               onChange={() => {
-                params.sample_rate = 44100;
-                setParams({ ...params });
-                play(params);
+                updateParam("sample_rate", 44100);
               }}
             />
             <label htmlFor="44100">44k</label>
@@ -310,9 +313,7 @@ export function SoundGenerator() {
               value="22050"
               checked={params.sample_rate === 22050}
               onChange={() => {
-                params.sample_rate = 22050;
-                setParams({ ...params });
-                play(params);
+                updateParam("sample_rate", 22050);
               }}
             />
             <label htmlFor="22050">22k</label>
@@ -323,9 +324,7 @@ export function SoundGenerator() {
               value="11025"
               checked={params.sample_rate === 11025}
               onChange={() => {
-                params.sample_rate = 11025;
-                setParams({ ...params });
-                play(params);
+                updateParam("sample_rate", 11025);
               }}
             />
             <label htmlFor="11025">11k</label>
@@ -336,9 +335,7 @@ export function SoundGenerator() {
               value="5512"
               checked={params.sample_rate === 5512}
               onChange={() => {
-                params.sample_rate = 5512;
-                setParams({ ...params });
-                play(params);
+                updateParam("sample_rate", 5512);
               }}
             />
             <label htmlFor="5512">6k</label>
@@ -355,9 +352,7 @@ export function SoundGenerator() {
               value="16"
               checked={params.sample_size === 16}
               onChange={() => {
-                params.sample_size = 16;
-                setParams({ ...params });
-                play(params);
+                updateParam("sample_size", 16);
               }}
             />
             <label htmlFor="16">16 bit</label>
@@ -368,9 +363,7 @@ export function SoundGenerator() {
               value="8"
               checked={params.sample_size === 8}
               onChange={() => {
-                params.sample_size = 8;
-                setParams({ ...params });
-                play(params);
+                updateParam("sample_size", 8);
               }}
             />
             <label htmlFor="8">8 bit</label>
@@ -382,65 +375,27 @@ export function SoundGenerator() {
           </a>
         </p>
         <p>
-          <button onClick={copy}>Copy code</button>
+          <Button onClick={copy}>Copy code</Button>
         </p>
       </div>
 
       {/* Serialize/Deserialize Section */}
       <div id="data">
-        <button
+        <Button
           onClick={() => {
             // Serialization UI not fully implemented.
             // e.g. Show a textarea with JSON.stringify(params, null, 2)
           }}
         >
           ▼ Serialize
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() => {
             // Deserialization UI not implemented.
           }}
         >
           ▲ Deserialize
-        </button>
-      </div>
-
-      {/* About jsfxr Section */}
-      <div id="links">
-        <h1>about jsfxr</h1>
-        <p>
-          Jsfxr is an online 8 bit sound maker and sfx generator. All you need
-          to make retro sound effects with jsfxr is a web browser. It's a
-          JavaScript port of the original{" "}
-          <a href="http://www.drpetter.se/project_sfxr.html">sfxr</a> by
-          DrPetter. You can also use it as a{" "}
-          <a href="https://github.com/chr15m/jsfxr#use">JavaScript library</a>{" "}
-          for playing and rendering sfxr sound effects in your games.
-        </p>
-        <br />
-        (Port of <a href="http://www.drpetter.se/project_sfxr.html">sfxr</a> by
-        DrPetter)
-        <br />
-        <a href="UNLICENSE">¢</a> 2011
-        <a href="http://fredricksen.net/">Eric Fredricksen</a>
-        <br />
-        With <a href="https://github.com/chr15m/jsfxr">contributions</a> from
-        Chris McCormick
-        <br />
-        <br />
-        <a href="https://github.com/chr15m/jsfxr" id="source">
-          (Source code)
-        </a>
-        <br />
-        <p>
-          <a href="https://github.com/chr15m/jsfxr#use">
-            See the documentation for using these sounds in your JavaScript game
-          </a>
-        </p>
-        <p>
-          Tip: use the <code>sfxr-to-wav</code> nodejs script to convert to a
-          wave file on the command line.
-        </p>
+        </Button>
       </div>
     </div>
   );
