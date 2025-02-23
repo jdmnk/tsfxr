@@ -5,15 +5,13 @@ import { Params, SoundEffect } from "@/lib/sfxr/sfxr";
 import { Button } from "./ui/button";
 import { useDebouncedCallback } from "use-debounce";
 
-// Assume external libraries (riffwave.js, sfxr.js) are loaded globally,
-// so that the globals Params and SoundEffect exist.
-const SOUND_VOL = 0.25;
-const SAMPLE_RATE = 44100;
-const SAMPLE_SIZE = 8;
-
 export function SoundGenerator() {
-  // Keep params and sound in state.
+  // State for the current sound parameters.
   const [params, setParams] = useState<Params>(new Params());
+  // File name cannot be directly derived from params, so we use a separate state.
+  const [fileName, setFileName] = useState<string>("sfx.wav");
+
+  // Derived values.
   const b58 = useMemo(() => params.toB58(), [params]);
   const sound = useMemo(() => new SoundEffect(params).generate(), [params]);
   const fileSize = useMemo(
@@ -30,73 +28,64 @@ export function SoundGenerator() {
   );
   const clipping = sound.clipping;
 
-  const play = (p: Params, noregen?: boolean) => {
-    if (!noregen) {
-      // Optionally update location.hash if desired.
-      const newSound = new SoundEffect(p).generate();
-      newSound.getAudio().play();
-    } else {
-      sound?.getAudio().play();
-    }
-  };
+  /**
+   * Update the sound and stats.
+   *
+   * The noregen flag acts as a "no regeneration" switch.
+   * When set to true, it tells the play function not to generate a new sound, but rather to use the existing one.
+   * This allows you to simply play the current sound without recalculating or updating it.
+   */
+  const play = useCallback(
+    (p: Params, noregen?: boolean) => {
+      if (!noregen) {
+        // Optionally update location.hash if desired.
+        const newSound = new SoundEffect(p).generate();
+        newSound.getAudio().play();
+      } else {
+        sound?.getAudio().play();
+      }
+    },
+    [sound]
+  );
 
-  // To be used for example with sliders.
+  // Debounced play to be used for example with sliders.
   const debouncedPlay = useDebouncedCallback(play, 300, { leading: true });
 
-  const updateParam = <K extends keyof Params>(
-    key: K,
-    value: Params[K],
-    shouldPlay: boolean = true
-  ) => {
+  const updateParam = <K extends keyof Params>(key: K, value: Params[K]) => {
     const newParams = params.clone();
     newParams[key] = value;
-    updateUi(newParams);
     debouncedPlay(newParams);
     setParams(newParams);
   };
 
-  // Update UI state based on params.
-  const updateUi = (p: any) => {
-    // In a React app the UI is automatically synced to state.
-    // If any additional processing is needed (for example slider conversion), do it here.
-    // (Left empty as original conversion functions are not ported.)
-  };
-
-  // Play sound and update stats.
-  /*
-    The noregen flag acts as a "no regeneration" switch. 
-    When set to true, it tells the play function not to generate a new sound, but rather to use the existing one. 
-    This allows you to simply play the current sound without recalculating or updating it.
-  */
-
   // Generate a new sound.
   const gen = (fx: string, shouldPlay: boolean = true) => {
     const newParams = params.clone();
-    // newParams.sound_vol = SOUND_VOL;
-    // newParams.sample_rate = SAMPLE_RATE;
-    // newParams.sample_size = SAMPLE_SIZE;
+
     if (fx.startsWith("#")) {
       newParams.fromB58(fx.slice(1));
+
       // Download name becomes "random.wav"
+      setFileName("random.wav");
     } else {
       // @ts-ignore
       if (typeof newParams[fx] === "function") {
         // @ts-ignore
         newParams[fx]();
+
+        // Download name becomes fx+".wav"
+        setFileName(fx + ".wav");
       }
-      // Download name becomes fx+".wav"
     }
     setParams(newParams);
-    updateUi(newParams);
     shouldPlay && play(newParams);
   };
 
-  // Mutate current parameters.
+  // Mutate (slightly change) current parameters.
   const mut = () => {
     const newp = params.clone();
     newp.mutate();
     setParams(newp);
-    updateUi(newp);
     play(newp);
   };
 
@@ -108,8 +97,7 @@ export function SoundGenerator() {
   // On mount, generate a default sound.
   useEffect(() => {
     const hash = window.location.hash.substring(1) || "pickupCoin";
-    gen(hash, false); // Don't play on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    gen(hash, false); // False = Don't play on mount
   }, []);
 
   return (
@@ -183,7 +171,7 @@ export function SoundGenerator() {
           <label htmlFor="noise">Noise</label>
         </div>
 
-        {/* Example slider: Attack time */}
+        {/* Detailed parameters section */}
         <table>
           <tbody>
             <tr>
@@ -240,8 +228,8 @@ export function SoundGenerator() {
 
         <div id="soundexport">
           Download:
-          <a id="wav" href={sound?.dataURI || "#"} download={b58 + ".wav"}>
-            sfx.wav
+          <a id="wav" href={sound?.dataURI || "#"} download={fileName}>
+            {fileName}
           </a>
           <table id="stats" style={{ margin: "auto" }}>
             <tbody>
