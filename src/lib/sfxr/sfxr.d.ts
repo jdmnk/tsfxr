@@ -273,6 +273,7 @@ export class Params {
   click(): this;
   random(): this;
   mutate(): this;
+  clone(): this;
 }
 /*** Main entry point ***/
 export function SoundEffect(ps: any): void;

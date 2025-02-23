@@ -169,6 +169,8 @@ var params_order = [
   "p_hpf_ramp",
 ];
 
+var params_global = ["sound_vol", "sample_rate", "sample_size"];
+
 var params_signed = [
   "p_freq_ramp",
   "p_freq_dramp",
@@ -492,6 +494,19 @@ Params.prototype.mutate = function () {
   if (rnd(1)) this.p_arp_speed += frnd(0.1) - 0.05;
   if (rnd(1)) this.p_arp_mod += frnd(0.1) - 0.05;
   return this;
+};
+
+Params.prototype.clone = function () {
+  var new_params = new Params();
+  for (var pi in params_order) {
+    var p = params_order[pi];
+    new_params[p] = this[p];
+  }
+  for (var pi in params_global) {
+    var p = params_global[pi];
+    new_params[p] = this[p];
+  }
+  return new_params;
 };
 
 /*** Simpler namespaced functional API ***/
