@@ -226,12 +226,14 @@ export function SoundGenerator() {
           <Button onClick={() => play(params, true)}>Play</Button>
         </div>
 
-        <div id="soundexport">
-          Download:
-          <a id="wav" href={sound?.dataURI || "#"} download={fileName}>
-            {fileName}
-          </a>
-          <table id="stats" style={{ margin: "auto" }}>
+        <div className="flex flex-col gap-2">
+          <div>
+            Download:
+            <a id="wav" href={sound?.dataURI || "#"} download={fileName}>
+              {fileName}
+            </a>
+          </div>
+          <table>
             <tbody>
               <tr>
                 <th>File size:</th>
@@ -249,89 +251,96 @@ export function SoundGenerator() {
           </table>
         </div>
 
-        <div>
-          Gain <label htmlFor="sound_vol"></label>
-          <input
-            type="range"
-            id="sound_vol"
-            min={0}
-            max={1000}
-            value={params.sound_vol ? params.sound_vol * 1000 : 0}
-            onChange={(e) => {
-              updateParam("sound_vol", parseFloat(e.target.value) / 1000);
-            }}
-          />
-          Sample Rate (Hz)
-          <div id="hz">
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-2">
+            <label htmlFor="sound_vol">Gain</label>
             <input
-              type="radio"
-              id="44100"
-              name="hz"
-              value="44100"
-              checked={params.sample_rate === 44100}
-              onChange={() => {
-                updateParam("sample_rate", 44100);
+              type="range"
+              id="sound_vol"
+              min={0}
+              max={1000}
+              value={params.sound_vol ? params.sound_vol * 1000 : 0}
+              onChange={(e) => {
+                updateParam("sound_vol", parseFloat(e.target.value) / 1000);
               }}
             />
-            <label htmlFor="44100">44k</label>
-            <input
-              type="radio"
-              id="22050"
-              name="hz"
-              value="22050"
-              checked={params.sample_rate === 22050}
-              onChange={() => {
-                updateParam("sample_rate", 22050);
-              }}
-            />
-            <label htmlFor="22050">22k</label>
-            <input
-              type="radio"
-              id="11025"
-              name="hz"
-              value="11025"
-              checked={params.sample_rate === 11025}
-              onChange={() => {
-                updateParam("sample_rate", 11025);
-              }}
-            />
-            <label htmlFor="11025">11k</label>
-            <input
-              type="radio"
-              id="5512"
-              name="hz"
-              value="5512"
-              checked={params.sample_rate === 5512}
-              onChange={() => {
-                updateParam("sample_rate", 5512);
-              }}
-            />
-            <label htmlFor="5512">6k</label>
           </div>
-          Sample size
-          <div id="bits">
-            <input
-              type="radio"
-              id="16"
-              name="bits"
-              value="16"
-              checked={params.sample_size === 16}
-              onChange={() => {
-                updateParam("sample_size", 16);
-              }}
-            />
-            <label htmlFor="16">16 bit</label>
-            <input
-              type="radio"
-              id="8"
-              name="bits"
-              value="8"
-              checked={params.sample_size === 8}
-              onChange={() => {
-                updateParam("sample_size", 8);
-              }}
-            />
-            <label htmlFor="8">8 bit</label>
+          <div className="flex flex-col gap-2">
+            Sample Rate (Hz)
+            <div className="flex gap-2">
+              <input
+                type="radio"
+                id="44100"
+                name="hz"
+                value="44100"
+                checked={params.sample_rate === 44100}
+                onChange={() => {
+                  updateParam("sample_rate", 44100);
+                }}
+              />
+              <label htmlFor="44100">44k</label>
+              <input
+                type="radio"
+                id="22050"
+                name="hz"
+                value="22050"
+                checked={params.sample_rate === 22050}
+                onChange={() => {
+                  updateParam("sample_rate", 22050);
+                }}
+              />
+              <label htmlFor="22050">22k</label>
+              <input
+                type="radio"
+                id="11025"
+                name="hz"
+                value="11025"
+                checked={params.sample_rate === 11025}
+                onChange={() => {
+                  updateParam("sample_rate", 11025);
+                }}
+              />
+              <label htmlFor="11025">11k</label>
+              <input
+                type="radio"
+                id="5512"
+                name="hz"
+                value="5512"
+                checked={params.sample_rate === 5512}
+                onChange={() => {
+                  updateParam("sample_rate", 5512);
+                }}
+              />
+              <label htmlFor="5512">6k</label>
+            </div>
+          </div>
+
+          <div className="flex gap-2">
+            Sample size
+            <div className="flex gap-2">
+              <input
+                type="radio"
+                id="16"
+                name="bits"
+                value="16"
+                checked={params.sample_size === 16}
+                onChange={() => {
+                  updateParam("sample_size", 16);
+                }}
+              />
+              <label htmlFor="16">16 bit</label>
+              <input
+                type="radio"
+                id="8"
+                name="bits"
+                value="8"
+                checked={params.sample_size === 8}
+                onChange={() => {
+                  updateParam("sample_size", 8);
+                }}
+              />
+              <label htmlFor="8">8 bit</label>
+            </div>
           </div>
         </div>
 
