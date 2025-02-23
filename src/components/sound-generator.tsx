@@ -113,99 +113,78 @@ export function SoundGenerator() {
   }, []);
 
   return (
-    <div style={{ textAlign: "center", maxWidth: "800px", margin: "auto" }}>
-      <h1>jsfxr</h1>
-
+    <div className="flex gap-4">
       {/* Generator Section */}
-      <div id="generators">
+      <div className="flex flex-col gap-2">
         <h2>Generator</h2>
         <Button onClick={() => gen("random")}>Random</Button>
-        <br />
-        <br />
         <Button onClick={() => gen("pickupCoin")}>Pickup/coin</Button>
-        <br />
         <Button onClick={() => gen("laserShoot")}>Laser/shoot</Button>
-        <br />
         <Button onClick={() => gen("explosion")}>Explosion</Button>
-        <br />
         <Button onClick={() => gen("powerUp")}>Powerup</Button>
-        <br />
         <Button onClick={() => gen("hitHurt")}>Hit/hurt</Button>
-        <br />
         <Button onClick={() => gen("jump")}>Jump</Button>
-        <br />
         <Button onClick={() => gen("click")}>Click</Button>
-        <br />
         <Button onClick={() => gen("blipSelect")}>Blip/select</Button>
-        <br />
         <Button onClick={() => gen("synth")}>Synth</Button>
-        <br />
         <Button onClick={() => gen("tone")}>Tone</Button>
-        <br />
-        <br />
         <Button onClick={mut}>Mutate</Button>
-        <br />
-        <p>
-          <Button onClick={() => play(params, true)}>Play</Button>
-          <br />
-        </p>
+        <Button onClick={() => play(params, true)}>Play</Button>
       </div>
 
       {/* Manual Settings Section */}
-      <div className="demo">
+      <div className="flex flex-col gap-2">
         <h2>Manual Settings</h2>
-        <form>
-          <div id="shape">
-            <input
-              type="radio"
-              id="square"
-              name="shape"
-              value="0"
-              checked={params.wave_type === 0}
-              onChange={() => {
-                updateParam("wave_type", 0);
-              }}
-            />
-            <label htmlFor="square">Square</label>
-            <input
-              type="radio"
-              id="sawtooth"
-              name="shape"
-              value="1"
-              checked={params.wave_type === 1}
-              onChange={() => {
-                updateParam("wave_type", 1);
-              }}
-            />
-            <label htmlFor="sawtooth">Sawtooth</label>
-            <input
-              type="radio"
-              id="sine"
-              name="shape"
-              value="2"
-              checked={params.wave_type === 2}
-              onChange={() => {
-                updateParam("wave_type", 2);
-              }}
-            />
-            <label htmlFor="sine">Sine</label>
-            <input
-              type="radio"
-              id="noise"
-              name="shape"
-              value="3"
-              checked={params.wave_type === 3}
-              onChange={() => {
-                updateParam("wave_type", 3);
-              }}
-            />
-            <label htmlFor="noise">Noise</label>
-          </div>
-        </form>
-        <br />
+
+        <div className="flex gap-2">
+          <input
+            type="radio"
+            id="square"
+            name="shape"
+            value="0"
+            checked={params.wave_type === 0}
+            onChange={() => {
+              updateParam("wave_type", 0);
+            }}
+          />
+          <label htmlFor="square">Square</label>
+          <input
+            type="radio"
+            id="sawtooth"
+            name="shape"
+            value="1"
+            checked={params.wave_type === 1}
+            onChange={() => {
+              updateParam("wave_type", 1);
+            }}
+          />
+          <label htmlFor="sawtooth">Sawtooth</label>
+          <input
+            type="radio"
+            id="sine"
+            name="shape"
+            value="2"
+            checked={params.wave_type === 2}
+            onChange={() => {
+              updateParam("wave_type", 2);
+            }}
+          />
+          <label htmlFor="sine">Sine</label>
+          <input
+            type="radio"
+            id="noise"
+            name="shape"
+            value="3"
+            checked={params.wave_type === 3}
+            onChange={() => {
+              updateParam("wave_type", 3);
+            }}
+          />
+          <label htmlFor="noise">Noise</label>
+        </div>
 
         {/* Example slider: Attack time */}
-        <table style={{ margin: "auto" }}>
+        <table>
           <tbody>
             <tr>
               <th colSpan={2}>Envelope</th>
@@ -253,17 +232,17 @@ export function SoundGenerator() {
       </div>
 
       {/* Export Section */}
-      <div id="export">
-        <h2>Sound</h2>
-        <Button onClick={() => play(params, true)}>Play</Button>
-        <br />
+      <div className="flex flex-col gap-2">
+        <div className="flex gap-2">
+          <h2>Sound</h2>
+          <Button onClick={() => play(params, true)}>Play</Button>
+        </div>
+
         <div id="soundexport">
           Download:
-          <br />
           <a id="wav" href={sound?.dataURI || "#"} download={b58 + ".wav"}>
             sfx.wav
           </a>
-          <br />
           <table id="stats" style={{ margin: "auto" }}>
             <tbody>
               <tr>
@@ -282,9 +261,8 @@ export function SoundGenerator() {
           </table>
         </div>
 
-        <form>
+        <div>
           Gain <label htmlFor="sound_vol"></label>
-          <br />
           <input
             type="range"
             id="sound_vol"
@@ -295,10 +273,7 @@ export function SoundGenerator() {
               updateParam("sound_vol", parseFloat(e.target.value) / 1000);
             }}
           />
-          <br />
-          <br />
           Sample Rate (Hz)
-          <br />
           <div id="hz">
             <input
               type="radio"
@@ -345,10 +320,7 @@ export function SoundGenerator() {
             />
             <label htmlFor="5512">6k</label>
           </div>
-          <br />
-          <br />
           Sample size
-          <br />
           <div id="bits">
             <input
               type="radio"
@@ -373,19 +345,20 @@ export function SoundGenerator() {
             />
             <label htmlFor="8">8 bit</label>
           </div>
-        </form>
-        <p>
+        </div>
+
+        <div>
           <a id="share" href={"#" + b58}>
             🔗 permalink
           </a>
-        </p>
-        <p>
+        </div>
+        <div>
           <Button onClick={copy}>Copy code</Button>
-        </p>
+        </div>
       </div>
 
       {/* Serialize/Deserialize Section */}
-      <div id="data">
+      <div className="flex flex-col gap-2">
         <Button
           onClick={() => {
             // Serialization UI not fully implemented.
