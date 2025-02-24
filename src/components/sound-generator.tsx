@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { Params, SoundEffect } from "@/lib/sfxr/sfxr";
+import { Params, SoundEffect, convert, parameters } from "@/lib/sfxr/sfxr";
 import { Button } from "./ui/button";
 import { useDebouncedCallback } from "use-debounce";
+import { ParamSlider } from "./param-slider";
 
 export function SoundGenerator() {
   // State for the current sound parameters.
@@ -173,51 +174,61 @@ export function SoundGenerator() {
         </div>
 
         {/* Detailed parameters section */}
-        <table>
-          <tbody>
-            <tr>
-              <th colSpan={2}>Envelope</th>
-            </tr>
-            <tr>
-              <td>
-                <input
-                  type="range"
-                  id="p_env_attack"
-                  min={0}
-                  max={1000}
-                  value={params.p_env_attack ? params.p_env_attack * 1000 : 0}
-                  onChange={(e) => {
-                    updateParam(
-                      "p_env_attack",
-                      parseFloat(e.target.value) / 1000
-                    );
-                  }}
-                />
-              </td>
-              <th>Attack time</th>
-            </tr>
-            <tr>
-              <td>
-                <input
-                  type="range"
-                  id="p_env_sustain"
-                  min={0}
-                  max={1000}
-                  value={params.p_env_sustain ? params.p_env_sustain * 1000 : 0}
-                  onChange={(e) => {
-                    updateParam(
-                      "p_env_sustain",
-                      parseFloat(e.target.value) / 1000
-                    );
-                  }}
-                />
-              </td>
-              <th>Sustain time</th>
-            </tr>
-            {/* Additional sliders would follow a similar pattern. */}
-            {/* For any complex conversion (e.g. using custom convert functions), leave a comment */}
-          </tbody>
-        </table>
+        <div>
+          {[
+            "p_env_attack",
+            "p_env_sustain",
+            "p_env_punch",
+            "p_env_decay",
+            "p_base_freq",
+            "p_freq_limit",
+            "p_freq_ramp",
+          ].map((paramName) => {
+            const signed = parameters.signed.includes(paramName);
+            const min = signed ? -1000 : 0;
+            const max = 1000;
+            const value = params[paramName] ? params[paramName] * 1000 : 0;
+            const convertFn = convert.sliders[paramName];
+            const unitsFn = convert.units[paramName];
+
+            console.log(paramName, value);
+            return (
+              <ParamSlider
+                key={paramName}
+                label={paramName}
+                min={min}
+                max={max}
+                value={value}
+                onChange={(e) => {
+                  updateParam(paramName, e / 1000);
+                }}
+                format={(e) => unitsFn(convertFn(e / 1000))}
+              />
+            );
+          })}
+          {/* 
+          <ParamSlider
+            label="Sustain time"
+            min={0}
+            max={2}
+            value={params.p_env_sustain ? params.p_env_sustain : 0}
+            onChange={(e) => {
+              updateParam("p_env_sustain", e);
+            }}
+            format={(e) => e.toFixed(3) + " sec"}
+          />
+
+          <ParamSlider
+            label="Sustain time"
+            min={0}
+            max={2}
+            value={params.p_env_sustain ? params.p_env_sustain : 0}
+            onChange={(e) => {
+              updateParam("p_env_sustain", e);
+            }}
+            format={(e) => e.toFixed(3) + " sec"}
+          /> */}
+        </div>
       </div>
 
       {/* Export Section */}
