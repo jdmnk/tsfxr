@@ -1,6 +1,18 @@
-This is a game sound effects generator app based on the amazing [jsfxr](https://github.com/chr15m/jsfxr), but built with React and Next.js.
+Game sound effects generator built with JavaScript.
+
+Based on the amazing [jsfxr](https://github.com/chr15m/jsfxr).
 
 ## About
+
+This projects presents a number of upgrades and bug fixes on top of `jsfxr`.
+
+Upgrades:
+
+- modern tech stack (jQuery -> React)
+
+Bug fixes:
+
+- random generation would go out of bounds on certain params
 
 ## Getting Started
 
