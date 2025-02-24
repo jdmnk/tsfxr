@@ -185,9 +185,9 @@ export function SoundGenerator() {
             "p_freq_ramp",
           ].map((paramName) => {
             const signed = parameters.signed.includes(paramName);
-            const min = signed ? -1000 : 0;
-            const max = 1000;
-            const value = params[paramName] ? params[paramName] * 1000 : 0;
+            const min = signed ? -1 : 0;
+            const max = 1;
+            const value = params[paramName] ? params[paramName] : 0;
             const convertFn = convert.sliders[paramName];
             const unitsFn = convert.units[paramName];
 
@@ -198,11 +198,12 @@ export function SoundGenerator() {
                 label={paramName}
                 min={min}
                 max={max}
+                step={0.001}
                 value={value}
                 onChange={(e) => {
-                  updateParam(paramName, e / 1000);
+                  updateParam(paramName, e);
                 }}
-                format={(e) => unitsFn(convertFn(e / 1000))}
+                format={(e) => unitsFn(convertFn(e))}
               />
             );
           })}
