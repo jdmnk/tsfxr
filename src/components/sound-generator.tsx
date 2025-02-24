@@ -4,7 +4,8 @@ import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Params, SoundEffect, convert, parameters } from "@/lib/sfxr/sfxr";
 import { Button } from "./ui/button";
 import { useDebouncedCallback } from "use-debounce";
-import { ParamSlider } from "./param-slider";
+import { ParamToggleGroup } from "./param-toggle-group";
+import { Slider } from "./ui/slider";
 
 type NumericKeys<T> = {
   [K in keyof T]: T[K] extends number ? K : never;
@@ -136,7 +137,7 @@ export function SoundGenerator() {
   return (
     <div className="flex gap-4">
       {/* Generator Section */}
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 w-32">
         <h2>Generator</h2>
         <Button onClick={() => gen("random")}>Random</Button>
         <Button onClick={() => gen("pickupCoin")}>Pickup/coin</Button>
@@ -149,8 +150,15 @@ export function SoundGenerator() {
         <Button onClick={() => gen("blipSelect")}>Blip/select</Button>
         <Button onClick={() => gen("synth")}>Synth</Button>
         <Button onClick={() => gen("tone")}>Tone</Button>
-        <Button onClick={mut}>Mutate</Button>
-        <Button onClick={() => play(params, true)}>Play</Button>
+
+        <div className="flex flex-col gap-2 mt-4">
+          <Button variant="outline" onClick={mut}>
+            Mutate
+          </Button>
+          <Button variant="outline" onClick={() => play(params, true)}>
+            Play
+          </Button>
+        </div>
       </div>
 
       {/* Manual Settings Section */}
@@ -158,50 +166,14 @@ export function SoundGenerator() {
         <h2>Manual Settings</h2>
 
         <div className="flex gap-2">
-          <input
-            type="radio"
-            id="square"
-            name="shape"
-            value="0"
-            checked={params.wave_type === 0}
-            onChange={() => {
-              updateParam("wave_type", 0);
+          <ParamToggleGroup
+            options={["0", "1", "2", "3"]}
+            labels={["Square", "Sawtooth", "Sine", "Noise"]}
+            onChange={(value) => {
+              updateParam("wave_type", +value);
             }}
+            value={params.wave_type.toString()}
           />
-          <label htmlFor="square">Square</label>
-          <input
-            type="radio"
-            id="sawtooth"
-            name="shape"
-            value="1"
-            checked={params.wave_type === 1}
-            onChange={() => {
-              updateParam("wave_type", 1);
-            }}
-          />
-          <label htmlFor="sawtooth">Sawtooth</label>
-          <input
-            type="radio"
-            id="sine"
-            name="shape"
-            value="2"
-            checked={params.wave_type === 2}
-            onChange={() => {
-              updateParam("wave_type", 2);
-            }}
-          />
-          <label htmlFor="sine">Sine</label>
-          <input
-            type="radio"
-            id="noise"
-            name="shape"
-            value="3"
-            checked={params.wave_type === 3}
-            onChange={() => {
-              updateParam("wave_type", 3);
-            }}
-          />
-          <label htmlFor="noise">Noise</label>
         </div>
 
         {/* Detailed parameters section */}
@@ -221,18 +193,27 @@ export function SoundGenerator() {
             const unitsFn = convert.units[paramName];
 
             return (
-              <ParamSlider
+              <div
                 key={paramName}
-                label={paramLabel}
-                min={min}
-                max={max}
-                step={0.001}
-                value={value}
-                onChange={(e) => {
-                  updateParam(paramName, e);
-                }}
-                format={(e) => unitsFn(convertFn(e))}
-              />
+                className="grid grid-cols-[auto_250px] gap-4"
+              >
+                <Slider
+                  min={min}
+                  max={max}
+                  step={0.001}
+                  value={[value]}
+                  onValueChange={(e) => {
+                    updateParam(paramName, e[0]);
+                  }}
+                  className="w-32"
+                />
+                <div className="">
+                  <span className="text-sm font-semibold">
+                    {paramLabel}:&nbsp;
+                  </span>
+                  <span className="text-xs">{unitsFn(convertFn(value))}</span>
+                </div>
+              </div>
             );
           })}
         </div>
@@ -240,9 +221,15 @@ export function SoundGenerator() {
 
       {/* Export Section */}
       <div className="flex flex-col gap-2">
+        <h2>Sound</h2>
         <div className="flex gap-2">
-          <h2>Sound</h2>
-          <Button onClick={() => play(params, true)}>Play</Button>
+          <Button
+            variant="outline"
+            className="w-32"
+            onClick={() => play(params, true)}
+          >
+            Play
+          </Button>
         </div>
 
         <div className="flex flex-col gap-2">
@@ -273,96 +260,49 @@ export function SoundGenerator() {
         <div className="flex flex-col gap-2">
           <div className="flex gap-2">
             <label htmlFor="sound_vol">Gain</label>
-            <input
-              type="range"
-              id="sound_vol"
+            <Slider
               min={0}
-              max={1000}
-              value={params.sound_vol ? params.sound_vol * 1000 : 0}
-              onChange={(e) => {
-                updateParam("sound_vol", parseFloat(e.target.value) / 1000);
+              max={1}
+              step={0.001}
+              value={[params.sound_vol ? params.sound_vol : 0]}
+              onValueChange={(e) => {
+                updateParam("sound_vol", e[0]);
               }}
             />
           </div>
           <div className="flex flex-col gap-2">
             Sample Rate (Hz)
             <div className="flex gap-2">
-              <input
-                type="radio"
-                id="44100"
-                name="hz"
-                value="44100"
-                checked={params.sample_rate === 44100}
-                onChange={() => {
-                  updateParam("sample_rate", 44100);
+              <ParamToggleGroup
+                options={["44100", "22050", "11025", "5512"]}
+                labels={["44k", "22k", "11k", "6k"]}
+                onChange={(value) => {
+                  updateParam("sample_rate", +value);
                 }}
+                value={params.sample_rate.toString()}
               />
-              <label htmlFor="44100">44k</label>
-              <input
-                type="radio"
-                id="22050"
-                name="hz"
-                value="22050"
-                checked={params.sample_rate === 22050}
-                onChange={() => {
-                  updateParam("sample_rate", 22050);
-                }}
-              />
-              <label htmlFor="22050">22k</label>
-              <input
-                type="radio"
-                id="11025"
-                name="hz"
-                value="11025"
-                checked={params.sample_rate === 11025}
-                onChange={() => {
-                  updateParam("sample_rate", 11025);
-                }}
-              />
-              <label htmlFor="11025">11k</label>
-              <input
-                type="radio"
-                id="5512"
-                name="hz"
-                value="5512"
-                checked={params.sample_rate === 5512}
-                onChange={() => {
-                  updateParam("sample_rate", 5512);
-                }}
-              />
-              <label htmlFor="5512">6k</label>
             </div>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2">
             Sample size
             <div className="flex gap-2">
-              <input
-                type="radio"
-                id="16"
-                name="bits"
-                value="16"
-                checked={params.sample_size === 16}
-                onChange={() => {
-                  updateParam("sample_size", 16);
+              <ParamToggleGroup
+                options={["16", "8"]}
+                labels={["16 bit", "8 bit"]}
+                onChange={(value) => {
+                  updateParam("sample_size", +value);
                 }}
-              />
-              <label htmlFor="16">16 bit</label>
-              <input
-                type="radio"
-                id="8"
-                name="bits"
-                value="8"
-                checked={params.sample_size === 8}
-                onChange={() => {
-                  updateParam("sample_size", 8);
-                }}
-              />
-              <label htmlFor="8">8 bit</label>
+                value={params.sample_size.toString()}
+              ></ParamToggleGroup>
             </div>
           </div>
         </div>
+      </div>
 
+      {/* Serialize/Deserialize Section */}
+      <div className="flex flex-col gap-2">
+        <h2>Share</h2>
         <div>
           <a id="share" href={"#" + b58}>
             🔗 permalink
@@ -371,10 +311,6 @@ export function SoundGenerator() {
         <div>
           <Button onClick={copy}>Copy code</Button>
         </div>
-      </div>
-
-      {/* Serialize/Deserialize Section */}
-      <div className="flex flex-col gap-2">
         <Button
           onClick={() => {
             // Serialization UI not fully implemented.
