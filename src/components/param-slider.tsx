@@ -10,7 +10,7 @@ export function ParamSlider(props: {
   format: (value: number) => string;
 }) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="grid grid-cols-[200px_auto_150px] gap-2">
       <label className="text-sm">{props.label}</label>
       <Slider
         min={props.min}
@@ -20,7 +20,7 @@ export function ParamSlider(props: {
         onValueChange={(e) => props.onChange(e[0])}
         className="w-32"
       />
-      <span>{props.format(props.value)}</span>
+      <span className="pl-2 text-sm">{props.format(props.value)}</span>
     </div>
   );
 }
