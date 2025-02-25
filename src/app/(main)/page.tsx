@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback, use } from "react";
 import { Params, SoundEffect } from "@/lib/sfxr/sfxr";
 import { useDebouncedCallback } from "use-debounce";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,13 @@ export default function Home() {
   // Derived values.
   const b58 = useMemo(() => params.toB58(), [params]);
   const sound = useMemo(() => new SoundEffect(params).generate(), [params]);
-  const analyser = sound.getAudio().analyser;
+  const audio = useMemo(() => sound.getAudio(), [sound]);
+
+  // TODO: This is a bit fucked up, maybe a separate state for analyser? idk
+  const analyser = useMemo(() => audio.analyser, [sound]);
+
+  console.log(audio);
+  console.log(analyser);
 
   const fileSize = useMemo(
     () => Math.round(sound.wav.length / 1024) + "kB",
@@ -34,26 +40,15 @@ export default function Home() {
   );
   const clipping = sound.clipping;
 
-  /**
-   * Update the sound and stats.
-   *
-   * The noregen flag acts as a "no regeneration" switch.
-   * When set to true, it tells the play function not to generate a new sound, but rather to use the existing one.
-   * This allows you to simply play the current sound without recalculating or updating it.
-   */
-  const play = useCallback(
-    (p: Params, noregen?: boolean) => {
-      if (!noregen) {
-        // Optionally update location.hash if desired.
-        const newSound = new SoundEffect(p).generate();
-        newSound.getAudio().play();
-      } else {
-        sound?.getAudio().play();
-        console.log("Playing existing sound");
-      }
-    },
-    [sound]
-  );
+  // We only want to play the sound when the audio buffer is updated.
+  // By reacting to the audio buffer, we can assure that the analyser node is also updated.
+  useEffect(() => {
+    debouncedPlay();
+  }, [audio]);
+
+  const play = useCallback(() => {
+    audio.play();
+  }, [sound]);
 
   // Debounced play to be used for example with sliders.
   const debouncedPlay = useDebouncedCallback(play, 300, { leading: true });
@@ -61,7 +56,6 @@ export default function Home() {
   const updateParam = <K extends keyof Params>(key: K, value: Params[K]) => {
     const newParams = params.clone();
     newParams[key] = value;
-    debouncedPlay(newParams);
     setParams(newParams);
   };
 
@@ -85,7 +79,7 @@ export default function Home() {
       }
     }
     setParams(newParams);
-    shouldPlay && play(newParams);
+    // shouldPlay && play();
   };
 
   // Mutate (slightly change) current parameters.
@@ -93,7 +87,6 @@ export default function Home() {
     const newp = params.clone();
     newp.mutate();
     setParams(newp);
-    play(newp);
   };
 
   // Copy b58 code to clipboard.
@@ -129,7 +122,7 @@ export default function Home() {
           <Button variant="outline" onClick={mut}>
             Mutate
           </Button>
-          <Button variant="outline" onClick={() => play(params, true)}>
+          <Button variant="outline" onClick={() => play()}>
             Play
           </Button>
         </div>
@@ -252,7 +245,7 @@ export default function Home() {
             />
           </div>
 
-          <Oscilloscope analyser={analyser} />
+          {analyser && <Oscilloscope analyser={analyser} />}
 
           <div className="flex flex-col gap-2 mt-4">
             <div>
