@@ -2,13 +2,14 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Params, SoundEffect } from "@/lib/sfxr/sfxr";
-import { Button } from "./ui/button";
 import { useDebouncedCallback } from "use-debounce";
-import { ParamToggleGroup } from "./param-toggle-group";
-import { Slider } from "./ui/slider";
-import { ParamSection } from "./param-section";
+import { Button } from "@/components/ui/button";
+import { ParamSection } from "@/components/param-section";
+import { ParamToggleGroup } from "@/components/param-toggle-group";
+import { Slider } from "@/components/ui/slider";
+import { Oscilloscope } from "@/components/oscilloscope";
 
-export function SoundGenerator() {
+export default function Home() {
   // State for the current sound parameters.
   const [params, setParams] = useState<Params>(new Params());
   // File name cannot be directly derived from params, so we use a separate state.
@@ -17,6 +18,8 @@ export function SoundGenerator() {
   // Derived values.
   const b58 = useMemo(() => params.toB58(), [params]);
   const sound = useMemo(() => new SoundEffect(params).generate(), [params]);
+  const analyser = sound.getAudio().analyser;
+
   const fileSize = useMemo(
     () => Math.round(sound.wav.length / 1024) + "kB",
     [sound]
@@ -46,6 +49,7 @@ export function SoundGenerator() {
         newSound.getAudio().play();
       } else {
         sound?.getAudio().play();
+        console.log("Playing existing sound");
       }
     },
     [sound]
@@ -105,7 +109,7 @@ export function SoundGenerator() {
   }, []);
 
   return (
-    <div className="flex gap-4">
+    <main className="flex flex-wrap m-3 md:m-4 lg:m-8 justify-center gap-4">
       {/* Generator Section */}
       <div className="flex flex-col gap-2 w-32">
         <h2 className="font-bold text-lg">Generator</h2>
@@ -135,7 +139,7 @@ export function SoundGenerator() {
       <div className="flex flex-col gap-2">
         <h2 className="font-bold text-lg">Manual Settings</h2>
 
-        <div className="flex gap-2">
+        <div className="flex">
           <ParamToggleGroup
             options={["0", "1", "2", "3"]}
             labels={["Square", "Sawtooth", "Sine", "Noise"]}
@@ -205,15 +209,6 @@ export function SoundGenerator() {
       {/* Export Section */}
       <div className="flex flex-col gap-2">
         <h2 className="font-bold text-lg">Sound</h2>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            className="w-32"
-            onClick={() => play(params, true)}
-          >
-            Play
-          </Button>
-        </div>
 
         <div className="flex flex-col gap-2">
           <div className="flex flex-col gap-2">
@@ -256,6 +251,8 @@ export function SoundGenerator() {
               }}
             />
           </div>
+
+          <Oscilloscope analyser={analyser} />
 
           <div className="flex flex-col gap-2 mt-4">
             <div>
@@ -300,6 +297,6 @@ export function SoundGenerator() {
           ▲ Deserialize
         </Button>
       </div>
-    </div>
+    </main>
   );
 }

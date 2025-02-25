@@ -888,7 +888,6 @@ SoundEffect.prototype.generate = function () {
 var _actx = null;
 var _sfxr_getAudioFn = function (wave) {
   return function () {
-    // check for procedural audio
     var actx = null;
     if (!_actx) {
       if ("AudioContext" in window) {
@@ -909,9 +908,14 @@ var _sfxr_getAudioFn = function (wave) {
       for (var i = 0; i < wave.buffer.length; i++) {
         nowBuffering[i] = wave.buffer[i];
       }
+
       var volume = 1.0;
+      var analyser = actx.createAnalyser(); // Add an analyser node
+      analyser.fftSize = 2048; // Adjust as needed
+
       var obj = {
         channels: [],
+        analyser, // Expose the analyser node
         setVolume: function (v) {
           volume = v;
           return obj;
@@ -921,13 +925,12 @@ var _sfxr_getAudioFn = function (wave) {
           proc.buffer = buff;
           var gainNode = actx.createGain();
           gainNode.gain.value = volume;
-          gainNode.connect(actx.destination);
+
           proc.connect(gainNode);
-          if (proc["start"]) {
-            proc.start();
-          } else if (proc["noteOn"]) {
-            proc.noteOn(0);
-          }
+          gainNode.connect(analyser); // Connect to the analyser
+          analyser.connect(actx.destination); // Connect analyser to output
+
+          proc.start();
           this.channels.push(proc);
           return proc;
         },

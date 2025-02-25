@@ -17,9 +17,9 @@ export function ParamSection({
     param.key.startsWith(uiParamsPrefix)
   );
   return (
-    <>
-      <h3 className="font-bold text-md mt-4">{title}</h3>
-      <div className="flex flex-col gap-2">
+    <div className="flex flex-col">
+      <h3 className="font-bold mb-2">{title}</h3>
+      <div className="flex flex-col">
         {uiParams.map((param) => {
           const paramName = param.key;
           const paramLabel = param.label;
@@ -35,7 +35,7 @@ export function ParamSection({
           const unitsFn = convert.units[paramName];
 
           return (
-            <div key={paramName} className="grid grid-cols-[auto_250px] gap-4">
+            <div key={paramName} className="grid grid-cols-[auto_270px] gap-2">
               <Slider
                 min={min}
                 max={max}
@@ -56,6 +56,6 @@ export function ParamSection({
           );
         })}
       </div>
-    </>
+    </div>
   );
 }
