@@ -1,50 +1,12 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { Params, SoundEffect, convert, parameters } from "@/lib/sfxr/sfxr";
+import { Params, SoundEffect } from "@/lib/sfxr/sfxr";
 import { Button } from "./ui/button";
 import { useDebouncedCallback } from "use-debounce";
 import { ParamToggleGroup } from "./param-toggle-group";
 import { Slider } from "./ui/slider";
-
-type NumericKeys<T> = {
-  [K in keyof T]: T[K] extends number ? K : never;
-}[keyof T];
-
-type NumericParamsKeys = NumericKeys<Params>;
-
-const UI_PARAMS: { key: NumericParamsKeys; label: string }[] = [
-  { key: "p_env_attack", label: "Attack Time" },
-  { key: "p_env_sustain", label: "Sustain Time" },
-  { key: "p_env_punch", label: "Sustain Punch" },
-  { key: "p_env_decay", label: "Decay Time" },
-
-  { key: "p_base_freq", label: "Start Frequency" },
-  { key: "p_freq_limit", label: "Min Frequency Cutoff" },
-  { key: "p_freq_ramp", label: "Slide" },
-  { key: "p_freq_dramp", label: "Delta Slide" },
-
-  { key: "p_vib_strength", label: "Vibrato Strength" },
-  { key: "p_vib_speed", label: "Vibrato Speed" },
-
-  { key: "p_arp_mod", label: "Arpeggio Multiplier" },
-  { key: "p_arp_speed", label: "Arpeggio Speed" },
-
-  { key: "p_duty", label: "Duty Cycle" },
-  { key: "p_duty_ramp", label: "Duty Cycle Sweep" },
-
-  { key: "p_repeat_speed", label: "Retrigger Rate" },
-
-  { key: "p_pha_offset", label: "Flanger Offset" },
-  { key: "p_pha_ramp", label: "Flanger Sweep" },
-
-  { key: "p_lpf_freq", label: "Low-Pass Cutoff Frequency" },
-  { key: "p_lpf_ramp", label: "Low-Pass Cutoff Sweep" },
-  { key: "p_lpf_resonance", label: "Low-Pass Resonance" },
-
-  { key: "p_hpf_freq", label: "High-Pass Cutoff Frequency" },
-  { key: "p_hpf_ramp", label: "High-Pass Cutoff Sweep" },
-];
+import { ParamSection } from "./param-section";
 
 export function SoundGenerator() {
   // State for the current sound parameters.
@@ -184,47 +146,60 @@ export function SoundGenerator() {
           />
         </div>
 
-        {/* Detailed parameters section */}
-        <div className="flex flex-col gap-2">
-          {UI_PARAMS.map((param) => {
-            const paramName = param.key;
-            const paramLabel = param.label;
-
-            const signed = parameters.signed.includes(paramName);
-            const min = signed ? -1 : 0;
-            const max = 1;
-            const value = params[paramName] ? params[paramName] : 0;
-
-            // @ts-ignore
-            const convertFn = convert.sliders[paramName];
-            // @ts-ignore
-            const unitsFn = convert.units[paramName];
-
-            return (
-              <div
-                key={paramName}
-                className="grid grid-cols-[auto_250px] gap-4"
-              >
-                <Slider
-                  min={min}
-                  max={max}
-                  step={0.001}
-                  value={[value]}
-                  onValueChange={(e) => {
-                    updateParam(paramName, e[0]);
-                  }}
-                  className="w-32"
-                />
-                <div className="">
-                  <span className="text-sm font-semibold">
-                    {paramLabel}:&nbsp;
-                  </span>
-                  <span className="text-xs">{unitsFn(convertFn(value))}</span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <ParamSection
+          title="Envelope"
+          uiParamsPrefix="p_env"
+          params={params}
+          updateParam={updateParam}
+        />
+        <ParamSection
+          title="Frequency"
+          uiParamsPrefix="p_freq"
+          params={params}
+          updateParam={updateParam}
+        />
+        <ParamSection
+          title="Vibrato"
+          uiParamsPrefix="p_vib"
+          params={params}
+          updateParam={updateParam}
+        />
+        <ParamSection
+          title="Arpeggiation"
+          uiParamsPrefix="p_arp"
+          params={params}
+          updateParam={updateParam}
+        />
+        <ParamSection
+          title="Duty"
+          uiParamsPrefix="p_duty"
+          params={params}
+          updateParam={updateParam}
+        />
+        <ParamSection
+          title="Retrigger"
+          uiParamsPrefix="p_repeat"
+          params={params}
+          updateParam={updateParam}
+        />
+        <ParamSection
+          title="Flanger"
+          uiParamsPrefix="p_pha"
+          params={params}
+          updateParam={updateParam}
+        />
+        <ParamSection
+          title="Low-Pass Filter"
+          uiParamsPrefix="p_lpf"
+          params={params}
+          updateParam={updateParam}
+        />
+        <ParamSection
+          title="High-Pass Filter"
+          uiParamsPrefix="p_hpf"
+          params={params}
+          updateParam={updateParam}
+        />
       </div>
 
       {/* Export Section */}
