@@ -18,22 +18,30 @@ const UI_PARAMS: { key: NumericParamsKeys; label: string }[] = [
   { key: "p_env_sustain", label: "Sustain Time" },
   { key: "p_env_punch", label: "Sustain Punch" },
   { key: "p_env_decay", label: "Decay Time" },
+
   { key: "p_base_freq", label: "Start Frequency" },
   { key: "p_freq_limit", label: "Min Frequency Cutoff" },
   { key: "p_freq_ramp", label: "Slide" },
   { key: "p_freq_dramp", label: "Delta Slide" },
+
   { key: "p_vib_strength", label: "Vibrato Strength" },
   { key: "p_vib_speed", label: "Vibrato Speed" },
+
   { key: "p_arp_mod", label: "Arpeggio Multiplier" },
   { key: "p_arp_speed", label: "Arpeggio Speed" },
+
   { key: "p_duty", label: "Duty Cycle" },
   { key: "p_duty_ramp", label: "Duty Cycle Sweep" },
+
   { key: "p_repeat_speed", label: "Retrigger Rate" },
+
   { key: "p_pha_offset", label: "Flanger Offset" },
   { key: "p_pha_ramp", label: "Flanger Sweep" },
+
   { key: "p_lpf_freq", label: "Low-Pass Cutoff Frequency" },
   { key: "p_lpf_ramp", label: "Low-Pass Cutoff Sweep" },
   { key: "p_lpf_resonance", label: "Low-Pass Resonance" },
+
   { key: "p_hpf_freq", label: "High-Pass Cutoff Frequency" },
   { key: "p_hpf_ramp", label: "High-Pass Cutoff Sweep" },
 ];
@@ -138,7 +146,7 @@ export function SoundGenerator() {
     <div className="flex gap-4">
       {/* Generator Section */}
       <div className="flex flex-col gap-2 w-32">
-        <h2>Generator</h2>
+        <h2 className="font-bold text-lg">Generator</h2>
         <Button onClick={() => gen("random")}>Random</Button>
         <Button onClick={() => gen("pickupCoin")}>Pickup/coin</Button>
         <Button onClick={() => gen("laserShoot")}>Laser/shoot</Button>
@@ -163,7 +171,7 @@ export function SoundGenerator() {
 
       {/* Manual Settings Section */}
       <div className="flex flex-col gap-2">
-        <h2>Manual Settings</h2>
+        <h2 className="font-bold text-lg">Manual Settings</h2>
 
         <div className="flex gap-2">
           <ParamToggleGroup
@@ -221,7 +229,7 @@ export function SoundGenerator() {
 
       {/* Export Section */}
       <div className="flex flex-col gap-2">
-        <h2>Sound</h2>
+        <h2 className="font-bold text-lg">Sound</h2>
         <div className="flex gap-2">
           <Button
             variant="outline"
@@ -233,45 +241,8 @@ export function SoundGenerator() {
         </div>
 
         <div className="flex flex-col gap-2">
-          <div>
-            Download:
-            <a id="wav" href={sound?.dataURI || "#"} download={fileName}>
-              {fileName}
-            </a>
-          </div>
-          <table>
-            <tbody>
-              <tr>
-                <th>File size:</th>
-                <td>{fileSize}</td>
-              </tr>
-              <tr>
-                <th>Samples:</th>
-                <td>{numSamples}</td>
-              </tr>
-              <tr>
-                <th>Clipped:</th>
-                <td>{clipping}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <div className="flex gap-2">
-            <label htmlFor="sound_vol">Gain</label>
-            <Slider
-              min={0}
-              max={1}
-              step={0.001}
-              value={[params.sound_vol ? params.sound_vol : 0]}
-              onValueChange={(e) => {
-                updateParam("sound_vol", e[0]);
-              }}
-            />
-          </div>
           <div className="flex flex-col gap-2">
-            Sample Rate (Hz)
+            <span className="text-sm">Sample Rate (Hz)</span>
             <div className="flex gap-2">
               <ParamToggleGroup
                 options={["44100", "22050", "11025", "5512"]}
@@ -285,7 +256,7 @@ export function SoundGenerator() {
           </div>
 
           <div className="flex flex-col gap-2">
-            Sample size
+            <span className="text-sm">Sample size</span>
             <div className="flex gap-2">
               <ParamToggleGroup
                 options={["16", "8"]}
@@ -297,12 +268,39 @@ export function SoundGenerator() {
               ></ParamToggleGroup>
             </div>
           </div>
+
+          <div className="flex gap-2">
+            <span className="text-sm">Gain</span>
+            <Slider
+              min={0}
+              max={1}
+              step={0.001}
+              value={[params.sound_vol ? params.sound_vol : 0]}
+              onValueChange={(e) => {
+                updateParam("sound_vol", e[0]);
+              }}
+            />
+          </div>
+
+          <div className="flex flex-col gap-2 mt-4">
+            <div>
+              <span className="pr-1">Download:</span>
+              <a id="wav" href={sound?.dataURI || "#"} download={fileName}>
+                {fileName}
+              </a>
+            </div>
+            <div>
+              <div>File size: {fileSize}</div>
+              <div>Samples: {numSamples}</div>
+              <div>Clipped:{clipping}</div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Serialize/Deserialize Section */}
       <div className="flex flex-col gap-2">
-        <h2>Share</h2>
+        <h2 className="font-bold text-lg">Share</h2>
         <div>
           <a id="share" href={"#" + b58}>
             🔗 permalink
