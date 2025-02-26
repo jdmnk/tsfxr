@@ -4,7 +4,6 @@ export function Oscilloscope({ analyser }: { analyser: AnalyserNode }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    console.log(analyser);
     if (!analyser || !canvasRef.current) return;
 
     const canvas = canvasRef.current;
@@ -16,8 +15,6 @@ export function Oscilloscope({ analyser }: { analyser: AnalyserNode }) {
       if (!ctx) return;
 
       analyser.getByteTimeDomainData(dataArray);
-
-      //   console.log(dataArray);
 
       ctx.fillStyle = "black";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -47,5 +44,5 @@ export function Oscilloscope({ analyser }: { analyser: AnalyserNode }) {
     draw();
   }, [analyser]);
 
-  return <canvas ref={canvasRef} width={500} height={200} />;
+  return <canvas ref={canvasRef} width={300} height={200} />;
 }

@@ -19,12 +19,7 @@ export default function Home() {
   const b58 = useMemo(() => params.toB58(), [params]);
   const sound = useMemo(() => new SoundEffect(params).generate(), [params]);
   const audio = useMemo(() => sound.getAudio(), [sound]);
-
-  // TODO: This is a bit fucked up, maybe a separate state for analyser? idk
   const analyser = useMemo(() => audio.analyser, [sound]);
-
-  console.log(audio);
-  console.log(analyser);
 
   const fileSize = useMemo(
     () => Math.round(sound.wav.length / 1024) + "kB",
