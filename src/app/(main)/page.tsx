@@ -217,11 +217,30 @@ export default function Home() {
         <div className="space-y-6 bg-card text-card-foreground p-4 rounded-lg shadow">
           <h2 className="text-lg font-semibold">Sound</h2>
 
-          <Button variant="default" className="w-full">
+          {/* <Button variant="default" className="w-full">
             Play
-          </Button>
+          </Button> */}
 
           <div className="space-y-4">
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <Label className="text-sm">Gain</Label>
+                <span className="text-sm text-muted-foreground">
+                  {convert.units["sound_vol"](params.sound_vol)}
+                </span>
+              </div>
+
+              <Slider
+                min={0}
+                max={1}
+                step={0.001}
+                value={[params.sound_vol ? params.sound_vol : 0]}
+                onValueChange={(e) => {
+                  updateParam("sound_vol", e[0]);
+                }}
+                className="w-full"
+              />
+            </div>
             <div className="space-y-2">
               <Label className="text-sm font-medium">Sample Rate (Hz)</Label>
 
@@ -248,49 +267,29 @@ export default function Home() {
               ></ParamToggleGroup>
             </div>
 
-            <div className="space-y-2">
-              {/* <Label className="text-sm font-medium">
-                Gain{" "}
-                <span className="text-sm">
-                  {convert.units["sound_vol"](params.sound_vol)}
-                </span>
-              </Label> */}
-              <div className="flex justify-between">
-                <Label className="text-sm">Gain</Label>
-                <span className="text-sm text-muted-foreground">
-                  {convert.units["sound_vol"](params.sound_vol)}
-                </span>
-              </div>
+            <div className="space-y-2 pt-6">
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                {/* <div>File name:</div>
+                <a id="wav" href={sound?.dataURI || "#"} download={fileName}>
+                  {fileName}
+                </a> */}
 
-              <Slider
-                min={0}
-                max={1}
-                step={0.001}
-                value={[params.sound_vol ? params.sound_vol : 0]}
-                onValueChange={(e) => {
-                  updateParam("sound_vol", e[0]);
-                }}
-                className="w-full"
-              />
+                <div>Duration:</div>
+                <div> {(+numSamples / params.sample_rate).toFixed(2)}s</div>
+                <div>File size:</div>
+                <div>{fileSize}</div>
+                <div>Samples:</div>
+                <div>{numSamples}</div>
+                <div>Clipped:</div>
+                <div>{clipping}</div>
+              </div>
             </div>
-
-            <div className="flex flex-col items-center gap-2 mt-4">
-              <div>
-                <Button>
-                  <a id="wav" href={sound?.dataURI || "#"} download={fileName}>
-                    Download
-                  </a>
-                </Button>
-              </div>
-              <div className="flex flex-col items-center">
-                <div>{fileName}</div>
-                <div>
-                  Duration: {(+numSamples / params.sample_rate).toFixed(2)}s
-                </div>
-                <div>File size: {fileSize}</div>
-                <div>Samples: {numSamples}</div>
-                <div>Clipped: {clipping}</div>
-              </div>
+            <div className="flex justify-between text-sm">
+              <Button className="w-full">
+                <a id="wav" href={sound?.dataURI || "#"} download={fileName}>
+                  Download
+                </a>
+              </Button>
             </div>
 
             <div className="flex flex-col items-center gap-2">
