@@ -13,6 +13,11 @@ export function Oscilloscope({ analyser }: { analyser: AnalyserNode }) {
     const bufferLength = analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
 
+    const resizeCanvas = () => {
+      canvas.width = canvas.parentElement?.clientWidth || 300;
+      canvas.height = canvas.parentElement?.clientHeight || 200;
+    };
+
     const draw = () => {
       if (!ctx) return;
 
@@ -50,8 +55,19 @@ export function Oscilloscope({ analyser }: { analyser: AnalyserNode }) {
       requestAnimationFrame(draw);
     };
 
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
     draw();
+
+    return () => {
+      window.removeEventListener("resize", resizeCanvas);
+    };
   }, [analyser, theme]);
 
-  return <canvas ref={canvasRef} width={300} height={200} />;
+  return (
+    <canvas
+      ref={canvasRef}
+      className="w-full h-48 bg-muted rounded overflow-hidden"
+    />
+  );
 }

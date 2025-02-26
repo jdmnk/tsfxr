@@ -220,6 +220,10 @@ export default function Home() {
           {/* <Button variant="default" className="w-full">
             Play
           </Button> */}
+          <div className="flex flex-col items-center gap-2">
+            {/* <span>Waveform</span> */}
+            {analyser && <Oscilloscope analyser={analyser} />}
+          </div>
 
           <div className="space-y-4">
             <div className="space-y-2">
@@ -290,11 +294,6 @@ export default function Home() {
                   Download
                 </a>
               </Button>
-            </div>
-
-            <div className="flex flex-col items-center gap-2">
-              <span>Waveform</span>
-              {analyser && <Oscilloscope analyser={analyser} />}
             </div>
           </div>
         </div>
