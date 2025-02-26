@@ -168,7 +168,7 @@ export default function Home() {
               <ToggleGroupItem className="flex-1" value="2">
                 Sine
               </ToggleGroupItem>
-              <ToggleGroupItem className="flex-1 relative" value="3">
+              <ToggleGroupItem className="flex-1 relative" value="4">
                 Triangle
                 <Badge
                   className="absolute -top-2 -right-2 px-1 py-0.5 text-[10px]"
@@ -177,7 +177,7 @@ export default function Home() {
                   NEW
                 </Badge>
               </ToggleGroupItem>
-              <ToggleGroupItem className="flex-1" value="4">
+              <ToggleGroupItem className="flex-1" value="3">
                 Noise
               </ToggleGroupItem>
             </ToggleGroup>
