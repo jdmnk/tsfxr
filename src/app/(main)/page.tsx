@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { Params, SoundEffect } from "@/lib/sfxr/sfxr";
+import { convert, Params, SoundEffect } from "@/lib/sfxr/sfxr";
 import { useDebouncedCallback } from "use-debounce";
 import { Button } from "@/components/ui/button";
 import { ParamSection } from "@/components/param-section";
@@ -9,6 +9,7 @@ import { ParamToggleGroup } from "@/components/param-toggle-group";
 import { Slider } from "@/components/ui/slider";
 import { Oscilloscope } from "@/components/oscilloscope";
 import { ThemeSwitcher } from "@/components/theme-switcher";
+import { Link } from "lucide-react";
 
 export default function Home() {
   // State for the current sound parameters.
@@ -199,9 +200,9 @@ export default function Home() {
       <div className="flex flex-col gap-2">
         <h2 className="font-bold text-lg">Sound</h2>
 
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-col gap-2">
-            <span className="text-sm">Sample Rate (Hz)</span>
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2 items-center">
+            <span className="text-center text-sm">Sample Rate (Hz)</span>
             <div className="flex gap-2">
               <ParamToggleGroup
                 options={["44100", "22050", "11025", "5512"]}
@@ -214,8 +215,8 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <span className="text-sm">Sample size</span>
+          <div className="flex flex-col gap-2 items-center">
+            <span className="text-sm text-center">Sample size</span>
             <div className="flex gap-2">
               <ParamToggleGroup
                 options={["16", "8"]}
@@ -228,8 +229,13 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="flex gap-2">
-            <span className="text-sm">Gain</span>
+          <div className="flex flex-col items-center gap-2">
+            <div className="flex gap-2 items-center">
+              <span className="text-sm text-center">Gain</span>
+              <span className="text-sm">
+                {convert.units["sound_vol"](params.sound_vol)}
+              </span>
+            </div>
             <Slider
               min={0}
               max={1}
@@ -238,23 +244,32 @@ export default function Home() {
               onValueChange={(e) => {
                 updateParam("sound_vol", e[0]);
               }}
+              className="w-48"
             />
           </div>
 
-          {analyser && <Oscilloscope analyser={analyser} />}
-
-          <div className="flex flex-col gap-2 mt-4">
+          <div className="flex flex-col items-center gap-2 mt-4">
             <div>
-              <span className="pr-1">Download:</span>
-              <a id="wav" href={sound?.dataURI || "#"} download={fileName}>
-                {fileName}
-              </a>
+              <Button>
+                <a id="wav" href={sound?.dataURI || "#"} download={fileName}>
+                  Download
+                </a>
+              </Button>
             </div>
-            <div>
+            <div className="flex flex-col items-center">
+              <div>{fileName}</div>
+              <div>
+                Duration: {(+numSamples / params.sample_rate).toFixed(2)}s
+              </div>
               <div>File size: {fileSize}</div>
               <div>Samples: {numSamples}</div>
-              <div>Clipped:{clipping}</div>
+              <div>Clipped: {clipping}</div>
             </div>
+          </div>
+
+          <div className="flex flex-col items-center gap-2">
+            <span>Waveform</span>
+            {analyser && <Oscilloscope analyser={analyser} />}
           </div>
         </div>
       </div>
@@ -264,9 +279,11 @@ export default function Home() {
         <ThemeSwitcher />
         <h2 className="font-bold text-lg">Share</h2>
         <div>
-          <a id="share" href={"#" + b58}>
-            🔗 permalink
-          </a>
+          <Button>
+            <a className="flex items-center gap-2" id="share" href={"#" + b58}>
+              <Link /> Copy permalink
+            </a>
+          </Button>
         </div>
         <div>
           <Button onClick={copy}>Copy code</Button>
@@ -277,14 +294,21 @@ export default function Home() {
             // e.g. Show a textarea with JSON.stringify(params, null, 2)
           }}
         >
-          ▼ Serialize
+          ▼ Export config
         </Button>
         <Button
           onClick={() => {
             // Deserialization UI not implemented.
           }}
         >
-          ▲ Deserialize
+          ▲ Import config
+        </Button>
+        <Button
+          onClick={() => {
+            // Deserialization UI not implemented.
+          }}
+        >
+          Download config
         </Button>
       </div>
     </main>
