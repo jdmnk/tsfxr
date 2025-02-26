@@ -4,7 +4,7 @@ import { Moon, Sun } from "lucide-react";
 
 export function ThemeSwitcher() {
   const { theme, setTheme } = useTheme();
-  console.log(theme);
+
   return (
     <div className="flex justify-center items-center space-x-2">
       <ToggleGroup type="single" value={theme} onValueChange={setTheme}>

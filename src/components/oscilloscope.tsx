@@ -18,11 +18,18 @@ export function Oscilloscope({ analyser }: { analyser: AnalyserNode }) {
 
       analyser.getByteTimeDomainData(dataArray);
 
-      ctx.fillStyle = theme === "dark" ? "black" : "white";
+      const backgroundColor = getComputedStyle(document.documentElement)
+        .getPropertyValue("--background")
+        .trim();
+      const foregroundColor = getComputedStyle(document.documentElement)
+        .getPropertyValue("--primary")
+        .trim();
+
+      ctx.fillStyle = `hsl(${backgroundColor})`;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.lineWidth = 2;
-      ctx.strokeStyle = theme === "dark" ? "white" : "black";
+      ctx.strokeStyle = `hsl(${foregroundColor})`;
       ctx.beginPath();
 
       const sliceWidth = (canvas.width * 1.0) / bufferLength;
