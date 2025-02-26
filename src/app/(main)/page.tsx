@@ -10,6 +10,8 @@ import { Slider } from "@/components/ui/slider";
 import { Oscilloscope } from "@/components/oscilloscope";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Link } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { UI_GENERATOR_CONFIG } from "@/lib/ui/ui.const";
 
 export default function Home() {
   // State for the current sound parameters.
@@ -99,111 +101,130 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="flex flex-wrap m-3 md:m-4 lg:m-8 justify-center gap-4">
-      {/* Generator Section */}
-      <div className="flex flex-col gap-2 w-32">
-        <h2 className="font-bold text-lg">Generator</h2>
-        <Button onClick={() => gen("random")}>Random</Button>
-        <Button onClick={() => gen("pickupCoin")}>Pickup/coin</Button>
-        <Button onClick={() => gen("laserShoot")}>Laser/shoot</Button>
-        <Button onClick={() => gen("explosion")}>Explosion</Button>
-        <Button onClick={() => gen("powerUp")}>Powerup</Button>
-        <Button onClick={() => gen("hitHurt")}>Hit/hurt</Button>
-        <Button onClick={() => gen("jump")}>Jump</Button>
-        <Button onClick={() => gen("click")}>Click</Button>
-        <Button onClick={() => gen("blipSelect")}>Blip/select</Button>
-        <Button onClick={() => gen("synth")}>Synth</Button>
-        <Button onClick={() => gen("tone")}>Tone</Button>
+    <main className="max-w-[1200px] mx-auto p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Synthesizer</h1>
+        <div className="flex items-center space-x-2">
+          <ThemeSwitcher />
+        </div>
+      </div>
 
-        <div className="flex flex-col gap-2 mt-4">
-          <Button variant="outline" onClick={mut}>
-            Mutate
-          </Button>
-          <Button variant="outline" onClick={() => play()}>
+      {/* Main app */}
+      <div className="grid grid-cols-1 lg:grid-cols-[250px_1fr_250px] gap-6">
+        {/* Generator Section */}
+        <div className="space-y-2 bg-card text-card-foreground p-4 rounded-lg shadow">
+          <h2 className="text-lg font-semibold mb-4">Generator</h2>
+          <div className="space-y-2">
+            {UI_GENERATOR_CONFIG.map((config) => (
+              <Button
+                key={config.key}
+                onClick={() => gen(config.key)}
+                className="w-full"
+              >
+                {config.label}
+              </Button>
+            ))}
+
+            <div className="space-y-2 pt-4">
+              <Button className="w-full" variant="outline" onClick={mut}>
+                Mutate
+              </Button>
+              <Button
+                className="w-full"
+                variant="outline"
+                onClick={() => play()}
+              >
+                Play
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Manual Settings Section */}
+        <div className="space-y-6 bg-card text-card-foreground p-4 rounded-lg shadow">
+          <h2 className="text-lg font-semibold">Manual Settings</h2>
+
+          <div className="space-y-4">
+            <ParamToggleGroup
+              options={["0", "1", "2", "3"]}
+              labels={["Square", "Sawtooth", "Sine", "Noise"]}
+              onChange={(value) => {
+                updateParam("wave_type", +value);
+              }}
+              value={params.wave_type.toString()}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <ParamSection
+              title="Envelope"
+              uiParamsPrefix="p_env"
+              params={params}
+              updateParam={updateParam}
+            />
+            <ParamSection
+              title="Frequency"
+              uiParamsPrefix="p_freq"
+              params={params}
+              updateParam={updateParam}
+            />
+            <ParamSection
+              title="Vibrato"
+              uiParamsPrefix="p_vib"
+              params={params}
+              updateParam={updateParam}
+            />
+            <ParamSection
+              title="Arpeggiation"
+              uiParamsPrefix="p_arp"
+              params={params}
+              updateParam={updateParam}
+            />
+            <ParamSection
+              title="Duty"
+              uiParamsPrefix="p_duty"
+              params={params}
+              updateParam={updateParam}
+            />
+            <ParamSection
+              title="Retrigger"
+              uiParamsPrefix="p_repeat"
+              params={params}
+              updateParam={updateParam}
+            />
+            <ParamSection
+              title="Flanger"
+              uiParamsPrefix="p_pha"
+              params={params}
+              updateParam={updateParam}
+            />
+            <ParamSection
+              title="Low-Pass Filter"
+              uiParamsPrefix="p_lpf"
+              params={params}
+              updateParam={updateParam}
+            />
+            <ParamSection
+              title="High-Pass Filter"
+              uiParamsPrefix="p_hpf"
+              params={params}
+              updateParam={updateParam}
+            />
+          </div>
+        </div>
+
+        {/* Export Section */}
+        <div className="space-y-6 bg-card text-card-foreground p-4 rounded-lg shadow">
+          <h2 className="text-lg font-semibold">Sound</h2>
+
+          <Button variant="default" className="w-full">
             Play
           </Button>
-        </div>
-      </div>
 
-      {/* Manual Settings Section */}
-      <div className="flex flex-col gap-2">
-        <h2 className="font-bold text-lg">Manual Settings</h2>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Sample Rate (Hz)</Label>
 
-        <div className="flex">
-          <ParamToggleGroup
-            options={["0", "1", "2", "3"]}
-            labels={["Square", "Sawtooth", "Sine", "Noise"]}
-            onChange={(value) => {
-              updateParam("wave_type", +value);
-            }}
-            value={params.wave_type.toString()}
-          />
-        </div>
-
-        <ParamSection
-          title="Envelope"
-          uiParamsPrefix="p_env"
-          params={params}
-          updateParam={updateParam}
-        />
-        <ParamSection
-          title="Frequency"
-          uiParamsPrefix="p_freq"
-          params={params}
-          updateParam={updateParam}
-        />
-        <ParamSection
-          title="Vibrato"
-          uiParamsPrefix="p_vib"
-          params={params}
-          updateParam={updateParam}
-        />
-        <ParamSection
-          title="Arpeggiation"
-          uiParamsPrefix="p_arp"
-          params={params}
-          updateParam={updateParam}
-        />
-        <ParamSection
-          title="Duty"
-          uiParamsPrefix="p_duty"
-          params={params}
-          updateParam={updateParam}
-        />
-        <ParamSection
-          title="Retrigger"
-          uiParamsPrefix="p_repeat"
-          params={params}
-          updateParam={updateParam}
-        />
-        <ParamSection
-          title="Flanger"
-          uiParamsPrefix="p_pha"
-          params={params}
-          updateParam={updateParam}
-        />
-        <ParamSection
-          title="Low-Pass Filter"
-          uiParamsPrefix="p_lpf"
-          params={params}
-          updateParam={updateParam}
-        />
-        <ParamSection
-          title="High-Pass Filter"
-          uiParamsPrefix="p_hpf"
-          params={params}
-          updateParam={updateParam}
-        />
-      </div>
-
-      {/* Export Section */}
-      <div className="flex flex-col gap-2">
-        <h2 className="font-bold text-lg">Sound</h2>
-
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2 items-center">
-            <span className="text-center text-sm">Sample Rate (Hz)</span>
-            <div className="flex gap-2">
               <ParamToggleGroup
                 options={["44100", "22050", "11025", "5512"]}
                 labels={["44k", "22k", "11k", "6k"]}
@@ -213,11 +234,10 @@ export default function Home() {
                 value={params.sample_rate.toString()}
               />
             </div>
-          </div>
 
-          <div className="flex flex-col gap-2 items-center">
-            <span className="text-sm text-center">Sample size</span>
-            <div className="flex gap-2">
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Sample Rate (Hz)</Label>
+
               <ParamToggleGroup
                 options={["16", "8"]}
                 labels={["16 bit", "8 bit"]}
@@ -227,89 +247,96 @@ export default function Home() {
                 value={params.sample_size.toString()}
               ></ParamToggleGroup>
             </div>
-          </div>
 
-          <div className="flex flex-col items-center gap-2">
-            <div className="flex gap-2 items-center">
-              <span className="text-sm text-center">Gain</span>
-              <span className="text-sm">
-                {convert.units["sound_vol"](params.sound_vol)}
-              </span>
-            </div>
-            <Slider
-              min={0}
-              max={1}
-              step={0.001}
-              value={[params.sound_vol ? params.sound_vol : 0]}
-              onValueChange={(e) => {
-                updateParam("sound_vol", e[0]);
-              }}
-              className="w-48"
-            />
-          </div>
-
-          <div className="flex flex-col items-center gap-2 mt-4">
-            <div>
-              <Button>
-                <a id="wav" href={sound?.dataURI || "#"} download={fileName}>
-                  Download
-                </a>
-              </Button>
-            </div>
-            <div className="flex flex-col items-center">
-              <div>{fileName}</div>
-              <div>
-                Duration: {(+numSamples / params.sample_rate).toFixed(2)}s
+            <div className="space-y-2">
+              {/* <Label className="text-sm font-medium">
+                Gain{" "}
+                <span className="text-sm">
+                  {convert.units["sound_vol"](params.sound_vol)}
+                </span>
+              </Label> */}
+              <div className="flex justify-between">
+                <Label className="text-sm">Gain</Label>
+                <span className="text-sm text-muted-foreground">
+                  {convert.units["sound_vol"](params.sound_vol)}
+                </span>
               </div>
-              <div>File size: {fileSize}</div>
-              <div>Samples: {numSamples}</div>
-              <div>Clipped: {clipping}</div>
+
+              <Slider
+                min={0}
+                max={1}
+                step={0.001}
+                value={[params.sound_vol ? params.sound_vol : 0]}
+                onValueChange={(e) => {
+                  updateParam("sound_vol", e[0]);
+                }}
+                className="w-full"
+              />
+            </div>
+
+            <div className="flex flex-col items-center gap-2 mt-4">
+              <div>
+                <Button>
+                  <a id="wav" href={sound?.dataURI || "#"} download={fileName}>
+                    Download
+                  </a>
+                </Button>
+              </div>
+              <div className="flex flex-col items-center">
+                <div>{fileName}</div>
+                <div>
+                  Duration: {(+numSamples / params.sample_rate).toFixed(2)}s
+                </div>
+                <div>File size: {fileSize}</div>
+                <div>Samples: {numSamples}</div>
+                <div>Clipped: {clipping}</div>
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center gap-2">
+              <span>Waveform</span>
+              {analyser && <Oscilloscope analyser={analyser} />}
             </div>
           </div>
+        </div>
 
-          <div className="flex flex-col items-center gap-2">
-            <span>Waveform</span>
-            {analyser && <Oscilloscope analyser={analyser} />}
+        {/* Serialize/Deserialize Section */}
+        {/* <div className="flex flex-col gap-2">
+          <h2 className="font-bold text-lg">Share</h2>
+          <div>
+            <Button>
+              <a
+                className="flex items-center gap-2"
+                id="share"
+                href={"#" + b58}
+              >
+                <Link /> Copy permalink
+              </a>
+            </Button>
           </div>
-        </div>
-      </div>
-
-      {/* Serialize/Deserialize Section */}
-      <div className="flex flex-col gap-2">
-        <ThemeSwitcher />
-        <h2 className="font-bold text-lg">Share</h2>
-        <div>
-          <Button>
-            <a className="flex items-center gap-2" id="share" href={"#" + b58}>
-              <Link /> Copy permalink
-            </a>
+          <div>
+            <Button onClick={copy}>Copy code</Button>
+          </div>
+          <Button
+            onClick={() => {
+             
+            }}
+          >
+            ▼ Export config
           </Button>
-        </div>
-        <div>
-          <Button onClick={copy}>Copy code</Button>
-        </div>
-        <Button
-          onClick={() => {
-            // Serialization UI not fully implemented.
-            // e.g. Show a textarea with JSON.stringify(params, null, 2)
-          }}
-        >
-          ▼ Export config
-        </Button>
-        <Button
-          onClick={() => {
-            // Deserialization UI not implemented.
-          }}
-        >
-          ▲ Import config
-        </Button>
-        <Button
-          onClick={() => {
-            // Deserialization UI not implemented.
-          }}
-        >
-          Download config
-        </Button>
+          <Button
+            onClick={() => {
+            }}
+          >
+            ▲ Import config
+          </Button>
+          <Button
+            onClick={() => {
+            }}
+          >
+            Download config
+          </Button>
+        </div> */}
       </div>
     </main>
   );

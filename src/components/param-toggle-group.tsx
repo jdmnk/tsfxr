@@ -14,7 +14,7 @@ export function ParamToggleGroup(props: {
         onValueChange={props.onChange}
       >
         {props.options.map((option, index) => (
-          <ToggleGroupItem key={option} value={option}>
+          <ToggleGroupItem key={option} value={option} className="flex-1">
             {props.labels[index]}
           </ToggleGroupItem>
         ))}

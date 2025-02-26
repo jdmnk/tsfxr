@@ -43,3 +43,17 @@ export const UI_PARAMS: UiParam[] = [
   { key: "p_hpf_freq", label: "High-Pass Cutoff Frequency" },
   { key: "p_hpf_ramp", label: "High-Pass Cutoff Sweep" },
 ];
+
+export const UI_GENERATOR_CONFIG = [
+  { key: "random", label: "Random" },
+  { key: "pickupCoin", label: "Pickup/Coin" },
+  { key: "laserShoot", label: "Laser/Shoot" },
+  { key: "explosion", label: "Explosion" },
+  { key: "powerUp", label: "Power-up" },
+  { key: "hitHurt", label: "Hit/Hurt" },
+  { key: "jump", label: "Jump" },
+  { key: "click", label: "Click" },
+  { key: "blipSelect", label: "Blip/Select" },
+  { key: "synth", label: "Synth" },
+  { key: "tone", label: "Tone" },
+];
