@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback, use } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Params, SoundEffect } from "@/lib/sfxr/sfxr";
 import { useDebouncedCallback } from "use-debounce";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { ParamSection } from "@/components/param-section";
 import { ParamToggleGroup } from "@/components/param-toggle-group";
 import { Slider } from "@/components/ui/slider";
 import { Oscilloscope } from "@/components/oscilloscope";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 
 export default function Home() {
   // State for the current sound parameters.
@@ -260,6 +261,7 @@ export default function Home() {
 
       {/* Serialize/Deserialize Section */}
       <div className="flex flex-col gap-2">
+        <ThemeSwitcher />
         <h2 className="font-bold text-lg">Share</h2>
         <div>
           <a id="share" href={"#" + b58}>

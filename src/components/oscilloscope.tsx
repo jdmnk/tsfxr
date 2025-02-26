@@ -1,7 +1,9 @@
+import { useTheme } from "next-themes";
 import React, { useEffect, useRef } from "react";
 
 export function Oscilloscope({ analyser }: { analyser: AnalyserNode }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (!analyser || !canvasRef.current) return;
@@ -16,11 +18,11 @@ export function Oscilloscope({ analyser }: { analyser: AnalyserNode }) {
 
       analyser.getByteTimeDomainData(dataArray);
 
-      ctx.fillStyle = "black";
+      ctx.fillStyle = theme === "dark" ? "black" : "white";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.lineWidth = 2;
-      ctx.strokeStyle = "lime";
+      ctx.strokeStyle = theme === "dark" ? "white" : "black";
       ctx.beginPath();
 
       const sliceWidth = (canvas.width * 1.0) / bufferLength;
@@ -42,7 +44,7 @@ export function Oscilloscope({ analyser }: { analyser: AnalyserNode }) {
     };
 
     draw();
-  }, [analyser]);
+  }, [analyser, theme]);
 
   return <canvas ref={canvasRef} width={300} height={200} />;
 }
