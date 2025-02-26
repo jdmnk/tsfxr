@@ -321,6 +321,7 @@ declare var SQUARE: number;
 declare var SAWTOOTH: number;
 declare var SINE: number;
 declare var NOISE: number;
+declare var TRIANGLE: number;
 export declare namespace convert {
   export { sliders };
   export { domain };
@@ -337,5 +338,6 @@ export declare namespace waveforms {
   export { SAWTOOTH };
   export { SINE };
   export { NOISE };
+  export { TRIANGLE };
 }
 export {};

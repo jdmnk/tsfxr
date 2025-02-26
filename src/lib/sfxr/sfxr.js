@@ -3,6 +3,7 @@ var SQUARE = 0;
 var SAWTOOTH = 1;
 var SINE = 2;
 var NOISE = 3;
+var TRIANGLE = 4;
 
 // Playback volume
 var masterVolume = 1;
@@ -792,6 +793,8 @@ SoundEffect.prototype.getRawBuffer = function () {
         sub_sample = Math.sin(fp * 2 * Math.PI);
       } else if (this.waveShape === NOISE) {
         sub_sample = noise_buffer[Math.floor((phase * 32) / iperiod)];
+      } else if (this.waveShape === TRIANGLE) {
+        sub_sample = 2 * Math.abs(2 * fp - 1) - 1;
       } else {
         throw "ERROR: Bad wave type: " + this.waveShape;
       }
@@ -1405,6 +1408,7 @@ var units = {
       SAWTOOTH: SAWTOOTH,
       SINE: SINE,
       NOISE: NOISE,
+      TRIANGLE: TRIANGLE,
     },
   };
 });
