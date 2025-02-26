@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { convert, Params, SoundEffect } from "@/lib/sfxr/sfxr";
 import { useDebouncedCallback } from "use-debounce";
 import { Button } from "@/components/ui/button";
@@ -9,9 +9,10 @@ import { ParamToggleGroup } from "@/components/param-toggle-group";
 import { Slider } from "@/components/ui/slider";
 import { Oscilloscope } from "@/components/oscilloscope";
 import { ThemeSwitcher } from "@/components/theme-switcher";
-import { Link } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { UI_GENERATOR_CONFIG } from "@/lib/ui/ui.const";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Badge } from "@/components/ui/badge";
 
 export default function Home() {
   // State for the current sound parameters.
@@ -45,9 +46,9 @@ export default function Home() {
     debouncedPlay();
   }, [audio]);
 
-  const play = useCallback(() => {
+  const play = () => {
     audio.play();
-  }, [sound]);
+  };
 
   // Debounced play to be used for example with sliders.
   const debouncedPlay = useDebouncedCallback(play, 300, { leading: true });
@@ -145,14 +146,41 @@ export default function Home() {
           <h2 className="text-lg font-semibold">Manual Settings</h2>
 
           <div className="space-y-4">
-            <ParamToggleGroup
-              options={["0", "1", "2", "3"]}
-              labels={["Square", "Sawtooth", "Sine", "Noise"]}
+            {/* <ParamToggleGroup
+              options={["0", "1", "2", "4", "3"]}
+              labels={["Square", "Sawtooth", "Sine", "Triangle", "Noise"]}
               onChange={(value) => {
                 updateParam("wave_type", +value);
               }}
               value={params.wave_type.toString()}
-            />
+            /> */}
+            <ToggleGroup
+              type="single"
+              value={params.wave_type.toString()}
+              onValueChange={(value) => updateParam("wave_type", +value)}
+            >
+              <ToggleGroupItem className="flex-1" value="0">
+                Square
+              </ToggleGroupItem>
+              <ToggleGroupItem className="flex-1" value="1">
+                Sawtooth
+              </ToggleGroupItem>
+              <ToggleGroupItem className="flex-1" value="2">
+                Sine
+              </ToggleGroupItem>
+              <ToggleGroupItem className="flex-1 relative" value="3">
+                Triangle
+                <Badge
+                  className="absolute -top-2 -right-2 px-1 py-0.5 text-[10px]"
+                  variant="secondary"
+                >
+                  NEW
+                </Badge>
+              </ToggleGroupItem>
+              <ToggleGroupItem className="flex-1" value="4">
+                Noise
+              </ToggleGroupItem>
+            </ToggleGroup>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -221,7 +249,6 @@ export default function Home() {
             Play
           </Button> */}
           <div className="flex flex-col items-center gap-2">
-            {/* <span>Waveform</span> */}
             {analyser && <Oscilloscope analyser={analyser} />}
           </div>
 
@@ -273,11 +300,6 @@ export default function Home() {
 
             <div className="space-y-2 pt-6">
               <div className="grid grid-cols-2 gap-2 text-sm">
-                {/* <div>File name:</div>
-                <a id="wav" href={sound?.dataURI || "#"} download={fileName}>
-                  {fileName}
-                </a> */}
-
                 <div>Duration:</div>
                 <div> {(+numSamples / params.sample_rate).toFixed(2)}s</div>
                 <div>File size:</div>
