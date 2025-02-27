@@ -54,21 +54,40 @@ export function WaveformBackground({ waveform }: { waveform: number }) {
         path += ` L${width / 2 + (i * width) / 2} ${height}`;
       }
     } else if (type === waveforms.NOISE) {
-      // Generate randomized points but ensure seamless looping
       const noiseSteps = 20;
       const noiseStep = width / noiseSteps;
-      path = `M0 ${height / 2}`;
+      // Use a continuous sine-based pattern that loops perfectly
+      const frequency = (2 * Math.PI) / width; // Complete cycles over width
+      const noiseSeed: number[] = Array.from(
+        { length: noiseSteps + 1 },
+        (_, i) => {
+          const x = i * noiseStep;
+          // Combine multiple frequencies for more complex noise
+          const base = Math.sin(x * frequency * 2) * height * 0.3;
+          const detail = Math.sin(x * frequency * 5) * height * 0.1;
+          return base + detail + height / 2; // Center vertically
+        }
+      );
+
+      // Start slightly before 0 to ensure continuity
+      path = `M-${noiseStep} ${noiseSeed[0]}`;
+
+      // Draw the full pattern
       for (let i = 0; i <= noiseSteps; i++) {
         const x = i * noiseStep;
-        const y = Math.random() * height * 0.8 + height * 0.1;
+        const y = noiseSeed[i];
         path += ` L${x} ${y}`;
       }
+
+      // Extend slightly past end to ensure seamless tiling
+      path += ` L${width + noiseStep} ${noiseSeed[0]}`;
     }
+
     return path;
   };
 
   return (
-    <div className="absolute inset-0 opacity-5 pointer-events-none overflow-hidden">
+    <div className="absolute inset-0 opacity-15 pointer-events-none overflow-hidden">
       <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <pattern
           id={`pattern-${waveform}`}
