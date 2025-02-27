@@ -1,5 +1,5 @@
 import { Params } from "@/lib/sfxr/sfxr";
-import { ParamSection } from "./param-section";
+import { ParamSection } from "../param-section";
 import { UpdateParamFn } from "@/types";
 
 export function ManualSettings({

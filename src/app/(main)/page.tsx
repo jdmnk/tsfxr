@@ -10,16 +10,12 @@ import { Oscilloscope } from "@/components/oscilloscope";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Label } from "@/components/ui/label";
 import { UI_GENERATOR_CONFIG } from "@/lib/ui/ui.const";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+
 import { WaveformBackground } from "@/components/waveform-background";
 import { WaveTypeToggle } from "@/components/wave-type-toggle";
-import { ManualSettings } from "@/components/manual-settings";
-import { ShareAndConfig } from "@/components/share-and-config";
-import { Info } from "lucide-react";
+import { ManualSettings } from "@/components/sections/manual-settings";
+import { ShareAndConfig } from "@/components/sections/share-and-config";
+import { FileExport } from "@/components/sections/file-export";
 
 export default function Home() {
   // State for the current sound parameters.
@@ -31,20 +27,6 @@ export default function Home() {
   const sound = useMemo(() => new SoundEffect(params).generate(), [params]);
   const audio = useMemo(() => sound.getAudio(), [sound]);
   const analyser = useMemo(() => audio.analyser, [sound]);
-
-  const fileSize = useMemo(
-    () => Math.round(sound.wav.length / 1024) + "kB",
-    [sound]
-  );
-  const numSamples = useMemo(
-    () =>
-      (
-        sound.header.subChunk2Size /
-        (sound.header.bitsPerSample >> 3)
-      ).toString(),
-    [sound]
-  );
-  const clipping = sound.clipping;
 
   // We only want to play the sound when the audio buffer is updated.
   // By reacting to the audio buffer, we can assure that the analyser node is also updated.
@@ -223,41 +205,7 @@ export default function Home() {
                 ></ParamToggleGroup>
               </div>
 
-              <div className="space-y-2 pt-6">
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div>Duration:</div>
-                  <div> {(+numSamples / params.sample_rate).toFixed(2)}s</div>
-                  <div>File size:</div>
-                  <div>{fileSize}</div>
-                  <div>Samples:</div>
-                  <div>{numSamples}</div>
-                  <div className="flex items-center">
-                    Clipped:
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Info className="h-4 w-4 ml-1 text-muted-foreground cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="max-w-xs">
-                          Clipping occurs when the audio signal exceeds the
-                          maximum amplitude that can be represented in the
-                          digital format. This can result in distortion of the
-                          sound. Reducing the overall volume or adjusting the
-                          envelope can help minimize clipping.
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
-                  <div>{clipping}</div>
-                </div>
-              </div>
-              <div className="flex justify-between text-sm">
-                <Button className="w-full">
-                  <a id="wav" href={sound?.dataURI || "#"} download={fileName}>
-                    Download
-                  </a>
-                </Button>
-              </div>
+              <FileExport params={params} sound={sound} fileName={fileName} />
             </div>
           </div>
         </div>
