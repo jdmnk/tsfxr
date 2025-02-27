@@ -1,6 +1,11 @@
 import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
 
-export function ParamToggleGroup(props: {
+export function ParamToggleGroup({
+  value,
+  options,
+  labels,
+  onChange,
+}: {
   value: string;
   options: string[];
   labels: string[];
@@ -8,14 +13,10 @@ export function ParamToggleGroup(props: {
 }) {
   return (
     <div className="">
-      <ToggleGroup
-        type="single"
-        value={props.value}
-        onValueChange={props.onChange}
-      >
-        {props.options.map((option, index) => (
+      <ToggleGroup type="single" value={value} onValueChange={onChange}>
+        {options.map((option, index) => (
           <ToggleGroupItem key={option} value={option} className="flex-1">
-            {props.labels[index]}
+            {labels[index]}
           </ToggleGroupItem>
         ))}
       </ToggleGroup>

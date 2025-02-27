@@ -19,6 +19,7 @@ import { useSoundStore } from "@/lib/store/useSoundStore";
 import { ExportConfigDialog } from "@/components/export-config-dialog";
 import { ImportConfigDialog } from "@/components/import-config-dialog";
 import { CopyPermalinkButton } from "@/components/copy-permalink-button";
+import { UpdateParamFn } from "@/types";
 
 export default function Home() {
   const { params, sound, analyser, fileName, setParams, play, updateParam } =
@@ -52,12 +53,14 @@ export default function Home() {
   // Debounced play for use with sliders.
   const debouncedPlay = useDebouncedCallback(play, 300, { leading: true });
 
-  const handleSliderChange = <K extends keyof Params>(
-    key: K,
-    value: Params[K]
-  ) => {
+  const handleSliderChange: UpdateParamFn = (key, value) => {
     updateParam(key, value);
     debouncedPlay();
+  };
+
+  const handleWaveTypeChange: UpdateParamFn = (key, value) => {
+    updateParam(key, value);
+    play();
   };
 
   // On mount, generate the sound from the permalink preset (if any).
@@ -71,16 +74,12 @@ export default function Home() {
 
   const handleImportConfig = (config: any) => {
     try {
-      // const importedConfig = JSON.parse(configString);
-
       if (config) {
         const newParams = new Params();
         Object.assign(newParams, config);
         setParams(newParams);
         play();
       }
-
-      // TODO
     } catch (error) {
       console.error("Failed to import configuration:", error);
     }
@@ -137,7 +136,10 @@ export default function Home() {
             <h2 className="text-lg font-semibold">Manual Settings</h2>
 
             <div className="space-y-4">
-              <WaveTypeToggle params={params} updateParam={updateParam} />
+              <WaveTypeToggle
+                params={params}
+                updateParam={handleWaveTypeChange}
+              />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
