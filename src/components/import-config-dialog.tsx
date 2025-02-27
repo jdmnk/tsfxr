@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -20,6 +20,7 @@ export function ImportConfigDialog({
   const [importConfig, setImportConfig] = useState("");
   const [importError, setImportError] = useState<string | null>(null);
   const [importSuccess, setImportSuccess] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleOnChange = (configString: string) => {
     setImportConfig(configString);
@@ -32,6 +33,22 @@ export function ImportConfigDialog({
       handleImportConfig(importedConfig);
     } catch (error) {
       setImportError("Invalid JSON format");
+    }
+  };
+
+  const handleFileImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const content = e.target?.result;
+        if (typeof content === "string") {
+          handleOnChange(content);
+        }
+      };
+      reader.readAsText(file);
+
+      event.target.value = ""; // Reset the input
     }
   };
 
@@ -65,6 +82,18 @@ export function ImportConfigDialog({
               <span>Configuration successfully imported!</span>
             </div>
           )}
+          <div>
+            <Button onClick={() => fileInputRef.current?.click()}>
+              Import from File
+            </Button>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileImport}
+              accept=".json"
+              style={{ display: "none" }}
+            />
+          </div>
         </div>
       </DialogContent>
     </Dialog>

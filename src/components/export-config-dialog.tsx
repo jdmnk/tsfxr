@@ -27,6 +27,19 @@ export function ExportConfigDialog({ params }: { params: Params }) {
     }
   };
 
+  const handleDownloadConfig = () => {
+    const configString = handleExportConfig();
+    const blob = new Blob([configString], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "synthesizer-config.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -60,6 +73,9 @@ export function ExportConfigDialog({ params }: { params: Params }) {
         {exportCopied && (
           <p className="text-sm text-green-500 mt-2">Copied to clipboard!</p>
         )}
+        <Button onClick={handleDownloadConfig} className="mt-4">
+          Download JSON
+        </Button>
       </DialogContent>
     </Dialog>
   );
