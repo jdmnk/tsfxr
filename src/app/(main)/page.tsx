@@ -1,34 +1,25 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { convert, Params, SoundEffect, waveforms } from "@/lib/sfxr/sfxr";
+import { convert, Params, SoundEffect } from "@/lib/sfxr/sfxr";
 import { useDebouncedCallback } from "use-debounce";
 import { Button } from "@/components/ui/button";
-import { ParamSection } from "@/components/param-section";
 import { ParamToggleGroup } from "@/components/param-toggle-group";
 import { Slider } from "@/components/ui/slider";
 import { Oscilloscope } from "@/components/oscilloscope";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Label } from "@/components/ui/label";
 import { UI_GENERATOR_CONFIG } from "@/lib/ui/ui.const";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Badge } from "@/components/ui/badge";
-import { Download, Info, Link, Share2, Upload } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { toast } from "sonner";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { WaveformBackground } from "@/components/waveform-background";
+import { WaveTypeToggle } from "@/components/wave-type-toggle";
+import { ManualSettings } from "@/components/manual-settings";
+import { ShareAndConfig } from "@/components/share-and-config";
+import { Info } from "lucide-react";
 
 export default function Home() {
   // State for the current sound parameters.
@@ -37,7 +28,6 @@ export default function Home() {
   const [fileName, setFileName] = useState<string>("sfx.wav");
 
   // Derived values.
-  const b58 = useMemo(() => params.toB58(), [params]);
   const sound = useMemo(() => new SoundEffect(params).generate(), [params]);
   const audio = useMemo(() => sound.getAudio(), [sound]);
   const analyser = useMemo(() => audio.analyser, [sound]);
@@ -75,14 +65,13 @@ export default function Home() {
     setParams(newParams);
   };
 
-  // Generate a new sound.
-  const gen = (fx: string, shouldPlay: boolean = true) => {
+  // Generate a new sound based on a preset.
+  const generateSoundFromPreset = (fx: string) => {
     const newParams = params.clone();
 
     if (fx.startsWith("#")) {
       newParams.fromB58(fx.slice(1));
 
-      // Download name becomes "random.wav"
       setFileName("random.wav");
     } else {
       // @ts-ignore
@@ -90,78 +79,27 @@ export default function Home() {
         // @ts-ignore
         newParams[fx]();
 
-        // Download name becomes fx+".wav"
         setFileName(fx + ".wav");
       }
     }
     setParams(newParams);
-    // shouldPlay && play();
   };
 
   // Mutate (slightly change) current parameters.
-  const mut = () => {
+  const mutateParams = () => {
     const newp = params.clone();
     newp.mutate();
     setParams(newp);
   };
 
-  // Copy b58 code to clipboard.
-  const handleCopyPermalink = async () => {
-    try {
-      const permaLink = window.location.href + "#" + params.toB58();
-      await navigator.clipboard.writeText(permaLink);
-      toast.success("Permalink copied to clipboard.", {
-        // description: "Permalink copied .",
-      });
-    } catch (error) {
-      console.error("Failed to copy permalink:", error);
-      toast.error("Copy failed", {
-        description: "There was an error copying the permalink.",
-      });
-    }
-  };
-
-  // On mount, generate a default sound.
+  // On mount, generate the sound from the permalink preset (if any).
   useEffect(() => {
-    const hash = window.location.hash || "pickupCoin";
+    const hash = window.location.hash;
 
-    gen(hash, false); // False = Don't play on mount
-  }, []);
-
-  const handleShare = async () => {
-    const configString = handleExportConfig();
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: "Synthesizer Configuration",
-          text: "Check out my synthesizer configuration!",
-          url: window.location.href,
-        });
-        toast.success("Shared successfully", {
-          description: "Your configuration has been shared.",
-        });
-      } catch (error) {
-        // Do nothing if user cancels
-      }
-    } else {
-      try {
-        await navigator.clipboard.writeText(configString);
-        toast("Copied to clipboard", {
-          description: "Your configuration has been copied to the clipboard.",
-        });
-      } catch (error) {
-        console.error("Error copying configuration to clipboard:", error);
-        toast("Copy failed", {
-          description: "There was an error copying your configuration.",
-        });
-      }
+    if (hash.length > 1) {
+      generateSoundFromPreset(hash);
     }
-  };
-
-  const handleExportConfig = () => {
-    const configString = JSON.stringify(params, null, 2);
-    return configString;
-  };
+  }, []);
 
   const handleImportConfig = (configString: string) => {
     try {
@@ -193,7 +131,7 @@ export default function Home() {
               {UI_GENERATOR_CONFIG.map((config) => (
                 <Button
                   key={config.key}
-                  onClick={() => gen(config.key)}
+                  onClick={() => generateSoundFromPreset(config.key)}
                   className="w-full"
                 >
                   {config.label}
@@ -201,7 +139,11 @@ export default function Home() {
               ))}
 
               <div className="space-y-2 pt-4">
-                <Button className="w-full" variant="outline" onClick={mut}>
+                <Button
+                  className="w-full"
+                  variant="outline"
+                  onClick={mutateParams}
+                >
                   Mutate
                 </Button>
                 <Button
@@ -220,116 +162,17 @@ export default function Home() {
             <h2 className="text-lg font-semibold">Manual Settings</h2>
 
             <div className="space-y-4">
-              <ToggleGroup
-                type="single"
-                value={params.wave_type.toString()}
-                onValueChange={(value) => updateParam("wave_type", +value)}
-                className="gap-4"
-              >
-                <ToggleGroupItem
-                  className="flex-1"
-                  value={waveforms.SQUARE.toString()}
-                >
-                  Square
-                </ToggleGroupItem>
-                <ToggleGroupItem
-                  className="flex-1"
-                  value={waveforms.SAWTOOTH.toString()}
-                >
-                  Sawtooth
-                </ToggleGroupItem>
-                <ToggleGroupItem
-                  className="flex-1"
-                  value={waveforms.SINE.toString()}
-                >
-                  Sine
-                </ToggleGroupItem>
-                <ToggleGroupItem
-                  className="flex-1 relative"
-                  value={waveforms.TRIANGLE.toString()}
-                >
-                  Triangle
-                  <Badge
-                    className="absolute -top-2 -right-2 px-1 py-0.5 text-[10px] bg-primary text-primary-foreground"
-                    variant="secondary"
-                  >
-                    NEW
-                  </Badge>
-                </ToggleGroupItem>
-                <ToggleGroupItem
-                  className="flex-1"
-                  value={waveforms.NOISE.toString()}
-                >
-                  Noise
-                </ToggleGroupItem>
-              </ToggleGroup>
+              <WaveTypeToggle params={params} updateParam={updateParam} />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <ParamSection
-                title="Envelope"
-                uiParamsPrefix="p_env"
-                params={params}
-                updateParam={updateParam}
-              />
-              <ParamSection
-                title="Frequency"
-                uiParamsPrefix="p_freq"
-                params={params}
-                updateParam={updateParam}
-              />
-              <ParamSection
-                title="Vibrato"
-                uiParamsPrefix="p_vib"
-                params={params}
-                updateParam={updateParam}
-              />
-              <ParamSection
-                title="Arpeggiation"
-                uiParamsPrefix="p_arp"
-                params={params}
-                updateParam={updateParam}
-              />
-              <ParamSection
-                title="Duty"
-                uiParamsPrefix="p_duty"
-                params={params}
-                updateParam={updateParam}
-              />
-              <ParamSection
-                title="Retrigger"
-                uiParamsPrefix="p_repeat"
-                params={params}
-                updateParam={updateParam}
-              />
-              <ParamSection
-                title="Flanger"
-                uiParamsPrefix="p_pha"
-                params={params}
-                updateParam={updateParam}
-              />
-              <ParamSection
-                title="Low-Pass Filter"
-                uiParamsPrefix="p_lpf"
-                params={params}
-                updateParam={updateParam}
-              />
-              <ParamSection
-                title="High-Pass Filter"
-                uiParamsPrefix="p_hpf"
-                params={params}
-                updateParam={updateParam}
-              />
+              <ManualSettings params={params} updateParam={updateParam} />
             </div>
           </div>
 
           {/* Export Section */}
           <div className="space-y-6 bg-card text-card-foreground p-4 rounded-lg shadow">
             <h2 className="text-lg font-semibold">Sound</h2>
-
-            {/* <Button variant="default" className="w-full">
-            Play
-          </Button> */}
             <div className="flex flex-col items-center gap-2">
               {analyser && <Oscilloscope analyser={analyser} />}
             </div>
@@ -417,90 +260,18 @@ export default function Home() {
               </div>
             </div>
           </div>
-
-          {/* Serialize/Deserialize Section */}
-          {/* <div className="flex flex-col gap-2">
-          <h2 className="font-bold text-lg">Share</h2>
-          <div>
-            <Button>
-              <a
-                className="flex items-center gap-2"
-                id="share"
-                href={"#" + b58}
-              >
-                <Link /> Copy permalink
-              </a>
-            </Button>
-          </div>
-          <div>
-            <Button onClick={copy}>Copy code</Button>
-          </div>
-          <Button
-            onClick={() => {
-             
-            }}
-          >
-            ▼ Export config
-          </Button>
-          <Button
-            onClick={() => {
-            }}
-          >
-            ▲ Import config
-          </Button>
-          <Button
-            onClick={() => {
-            }}
-          >
-            Download config
-          </Button>
-        </div> */}
         </div>
+
+        {/* Share and Configuration */}
         <div className="mt-6 bg-card text-card-foreground p-4 rounded-lg shadow">
           <h2 className="text-lg font-semibold mb-4">
             Share and Configuration
           </h2>
           <div className="flex flex-wrap gap-4">
-            <Button onClick={handleShare} className="flex items-center">
-              <Share2 className="mr-2 h-4 w-4" /> Share
-            </Button>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button className="flex items-center">
-                  <Download className="mr-2 h-4 w-4" /> Export Config
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="bg-background text-foreground">
-                <DialogHeader>
-                  <DialogTitle>Export Configuration</DialogTitle>
-                </DialogHeader>
-                <Textarea
-                  value={handleExportConfig()}
-                  readOnly
-                  className="min-h-[200px] bg-muted text-foreground"
-                />
-              </DialogContent>
-            </Dialog>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button className="flex items-center">
-                  <Upload className="mr-2 h-4 w-4" /> Import Config
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="bg-background text-foreground">
-                <DialogHeader>
-                  <DialogTitle>Import Configuration</DialogTitle>
-                </DialogHeader>
-                <Textarea
-                  placeholder="Paste your configuration JSON here"
-                  className="min-h-[200px] bg-muted text-foreground"
-                  onChange={(e) => handleImportConfig(e.target.value)}
-                />
-              </DialogContent>
-            </Dialog>
-            <Button onClick={handleCopyPermalink} className="flex items-center">
-              <Link className="mr-2 h-4 w-4" /> Copy Permalink
-            </Button>
+            <ShareAndConfig
+              params={params}
+              handleImportConfig={handleImportConfig}
+            />
           </div>
         </div>
       </main>

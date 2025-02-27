@@ -2,6 +2,7 @@ import { Params, convert, parameters } from "@/lib/sfxr/sfxr";
 import { Slider } from "./ui/slider";
 import { UI_PARAMS } from "@/lib/ui/ui.const";
 import { Label } from "./ui/label";
+import { UpdateParamFn } from "@/types";
 
 export function ParamSection({
   title,
@@ -12,7 +13,7 @@ export function ParamSection({
   title: string;
   uiParamsPrefix: string;
   params: Params;
-  updateParam: <K extends keyof Params>(key: K, value: Params[K]) => void;
+  updateParam: UpdateParamFn;
 }) {
   const uiParams = UI_PARAMS.filter((param) =>
     param.key.startsWith(uiParamsPrefix)

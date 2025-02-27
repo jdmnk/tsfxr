@@ -1311,7 +1311,7 @@ var units = {
     return v === 0 ? "OFF" : ((441000 / 64) * v).toPrecision(4) + " Hz";
   },
   p_vib_strength: function (v) {
-    return v === 0 ? "OFF" : "&plusmn; " + (v * 100).toPrecision(4) + "%";
+    return v === 0 ? "OFF" : (v * 100).toPrecision(4) + "%";
   },
 
   p_arp_mod: function (v) {
