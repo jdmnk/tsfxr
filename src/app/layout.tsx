@@ -67,6 +67,9 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} antialiased`}
     >
+      <head>
+        <meta name="apple-mobile-web-app-title" content="tsfxr" />
+      </head>
       <body className={geistSans.className}>
         <ThemeProvider attribute="class" defaultTheme="dark">
           <TooltipProvider>
