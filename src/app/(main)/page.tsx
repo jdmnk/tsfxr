@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
-import { convert, Params, SoundEffect } from "@/lib/sfxr/sfxr";
+import React, { useEffect } from "react";
+import { convert, Params } from "@/lib/sfxr/sfxr";
 import { useDebouncedCallback } from "use-debounce";
 import { Button } from "@/components/ui/button";
 import { ParamToggleGroup } from "@/components/param-toggle-group";
@@ -16,55 +16,30 @@ import { WaveTypeToggle } from "@/components/wave-type-toggle";
 import { ManualSettings } from "@/components/sections/manual-settings";
 import { ShareAndConfig } from "@/components/sections/share-and-config";
 import { FileExport } from "@/components/sections/file-export";
+import { useSoundStore } from "@/lib/store/useSoundStore";
 
 export default function Home() {
-  // State for the current sound parameters.
-  const [params, setParams] = useState<Params>(new Params());
-  // File name cannot be directly derived from params, so we use a separate state.
-  const [fileName, setFileName] = useState<string>("sfx.wav");
-
-  // Derived values.
-  const sound = useMemo(() => new SoundEffect(params).generate(), [params]);
-  const audio = useMemo(() => sound.getAudio(), [sound]);
-  const analyser = useMemo(() => audio.analyser, [sound]);
-
-  // We only want to play the sound when the audio buffer is updated.
-  // By reacting to the audio buffer, we can assure that the analyser node is also updated.
-  useEffect(() => {
-    debouncedPlay();
-  }, [audio]);
-
-  const play = () => {
-    audio.play();
-  };
+  const { params, sound, analyser, fileName, setParams, play, updateParam } =
+    useSoundStore();
 
   // Debounced play to be used for example with sliders.
   const debouncedPlay = useDebouncedCallback(play, 300, { leading: true });
 
-  const updateParam = <K extends keyof Params>(key: K, value: Params[K]) => {
-    const newParams = params.clone();
-    newParams[key] = value;
-    setParams(newParams);
-  };
-
   // Generate a new sound based on a preset.
   const generateSoundFromPreset = (fx: string) => {
-    const newParams = params.clone();
+    const newParams = new Params();
 
     if (fx.startsWith("#")) {
       newParams.fromB58(fx.slice(1));
-
-      setFileName("random.wav");
     } else {
       // @ts-ignore
       if (typeof newParams[fx] === "function") {
         // @ts-ignore
         newParams[fx]();
-
-        setFileName(fx + ".wav");
       }
     }
     setParams(newParams);
+    play();
   };
 
   // Mutate (slightly change) current parameters.
@@ -72,6 +47,15 @@ export default function Home() {
     const newp = params.clone();
     newp.mutate();
     setParams(newp);
+    play();
+  };
+
+  const handleSliderChange = <K extends keyof Params>(
+    key: K,
+    value: Params[K]
+  ) => {
+    updateParam(key as keyof Params, value);
+    debouncedPlay();
   };
 
   // On mount, generate the sound from the permalink preset (if any).
@@ -148,7 +132,10 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <ManualSettings params={params} updateParam={updateParam} />
+              <ManualSettings
+                params={params}
+                updateParam={handleSliderChange}
+              />
             </div>
           </div>
 
