@@ -13,6 +13,21 @@ import { Label } from "@/components/ui/label";
 import { UI_GENERATOR_CONFIG } from "@/lib/ui/ui.const";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Badge } from "@/components/ui/badge";
+import { Download, Info, Link, Share2, Upload } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function Home() {
   // State for the current sound parameters.
@@ -90,8 +105,18 @@ export default function Home() {
   };
 
   // Copy b58 code to clipboard.
-  const copy = () => {
-    navigator.clipboard.writeText(b58);
+  const handleCopyPermalink = async () => {
+    try {
+      await navigator.clipboard.writeText(b58);
+      toast.success("Permalink copied to clipboard.", {
+        // description: "Permalink copied .",
+      });
+    } catch (error) {
+      console.error("Failed to copy permalink:", error);
+      toast.error("Copy failed", {
+        description: "There was an error copying the permalink.",
+      });
+    }
   };
 
   // On mount, generate a default sound.
@@ -100,6 +125,51 @@ export default function Home() {
 
     gen(hash, false); // False = Don't play on mount
   }, []);
+
+  const handleShare = async () => {
+    const configString = handleExportConfig();
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Synthesizer Configuration",
+          text: "Check out my synthesizer configuration!",
+          url: window.location.href,
+        });
+        toast.success("Shared successfully", {
+          description: "Your configuration has been shared.",
+        });
+      } catch (error) {
+        // Do nothing if user cancels
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(configString);
+        toast("Copied to clipboard", {
+          description: "Your configuration has been copied to the clipboard.",
+        });
+      } catch (error) {
+        console.error("Error copying configuration to clipboard:", error);
+        toast("Copy failed", {
+          description: "There was an error copying your configuration.",
+        });
+      }
+    }
+  };
+
+  const handleExportConfig = () => {
+    const configString = JSON.stringify(params, null, 2);
+    return configString;
+  };
+
+  const handleImportConfig = (configString: string) => {
+    try {
+      const importedConfig = JSON.parse(configString);
+
+      // TODO
+    } catch (error) {
+      console.error("Failed to import configuration:", error);
+    }
+  };
 
   return (
     <main className="max-w-[1200px] mx-auto p-6">
@@ -146,18 +216,11 @@ export default function Home() {
           <h2 className="text-lg font-semibold">Manual Settings</h2>
 
           <div className="space-y-4">
-            {/* <ParamToggleGroup
-              options={["0", "1", "2", "4", "3"]}
-              labels={["Square", "Sawtooth", "Sine", "Triangle", "Noise"]}
-              onChange={(value) => {
-                updateParam("wave_type", +value);
-              }}
-              value={params.wave_type.toString()}
-            /> */}
             <ToggleGroup
               type="single"
               value={params.wave_type.toString()}
               onValueChange={(value) => updateParam("wave_type", +value)}
+              className="gap-4"
             >
               <ToggleGroupItem className="flex-1" value="0">
                 Square
@@ -171,7 +234,7 @@ export default function Home() {
               <ToggleGroupItem className="flex-1 relative" value="4">
                 Triangle
                 <Badge
-                  className="absolute -top-2 -right-2 px-1 py-0.5 text-[10px]"
+                  className="absolute -top-2 -right-2 px-1 py-0.5 text-[10px] bg-primary text-primary-foreground"
                   variant="secondary"
                 >
                   NEW
@@ -306,7 +369,23 @@ export default function Home() {
                 <div>{fileSize}</div>
                 <div>Samples:</div>
                 <div>{numSamples}</div>
-                <div>Clipped:</div>
+                <div className="flex items-center">
+                  Clipped:
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-4 w-4 ml-1 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="max-w-xs">
+                        Clipping occurs when the audio signal exceeds the
+                        maximum amplitude that can be represented in the digital
+                        format. This can result in distortion of the sound.
+                        Reducing the overall volume or adjusting the envelope
+                        can help minimize clipping.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
                 <div>{clipping}</div>
               </div>
             </div>
@@ -357,6 +436,51 @@ export default function Home() {
             Download config
           </Button>
         </div> */}
+      </div>
+      <div className="mt-6 bg-card text-card-foreground p-4 rounded-lg shadow">
+        <h2 className="text-lg font-semibold mb-4">Share and Configuration</h2>
+        <div className="flex flex-wrap gap-4">
+          <Button onClick={handleShare} className="flex items-center">
+            <Share2 className="mr-2 h-4 w-4" /> Share
+          </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="flex items-center">
+                <Download className="mr-2 h-4 w-4" /> Export Config
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-background text-foreground">
+              <DialogHeader>
+                <DialogTitle>Export Configuration</DialogTitle>
+              </DialogHeader>
+              <Textarea
+                value={handleExportConfig()}
+                readOnly
+                className="min-h-[200px] bg-muted text-foreground"
+              />
+            </DialogContent>
+          </Dialog>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="flex items-center">
+                <Upload className="mr-2 h-4 w-4" /> Import Config
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-background text-foreground">
+              <DialogHeader>
+                <DialogTitle>Import Configuration</DialogTitle>
+              </DialogHeader>
+              <Textarea
+                placeholder="Paste your configuration JSON here"
+                className="min-h-[200px] bg-muted text-foreground"
+                onChange={(e) => handleImportConfig(e.target.value)}
+              />
+            </DialogContent>
+          </Dialog>
+          <Button onClick={handleCopyPermalink} className="flex items-center">
+            <Link className="mr-2 h-4 w-4" /> Copy Permalink
+          </Button>
+        </div>
       </div>
     </main>
   );
