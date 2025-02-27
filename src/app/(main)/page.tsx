@@ -14,16 +14,15 @@ import { UI_GENERATOR_CONFIG } from "@/lib/ui/ui.const";
 import { WaveformBackground } from "@/components/waveform-background";
 import { WaveTypeToggle } from "@/components/wave-type-toggle";
 import { ManualSettings } from "@/components/sections/manual-settings";
-import { ShareAndConfig } from "@/components/sections/share-and-config";
 import { FileExport } from "@/components/sections/file-export";
 import { useSoundStore } from "@/lib/store/useSoundStore";
+import { ExportConfigDialog } from "@/components/export-config-dialog";
+import { ImportConfigDialog } from "@/components/import-config-dialog";
+import { CopyPermalinkButton } from "@/components/copy-permalink-button";
 
 export default function Home() {
   const { params, sound, analyser, fileName, setParams, play, updateParam } =
     useSoundStore();
-
-  // Debounced play to be used for example with sliders.
-  const debouncedPlay = useDebouncedCallback(play, 300, { leading: true });
 
   // Generate a new sound based on a preset.
   const generateSoundFromPreset = (fx: string) => {
@@ -50,11 +49,14 @@ export default function Home() {
     play();
   };
 
+  // Debounced play for use with sliders.
+  const debouncedPlay = useDebouncedCallback(play, 300, { leading: true });
+
   const handleSliderChange = <K extends keyof Params>(
     key: K,
     value: Params[K]
   ) => {
-    updateParam(key as keyof Params, value);
+    updateParam(key, value);
     debouncedPlay();
   };
 
@@ -67,9 +69,16 @@ export default function Home() {
     }
   }, []);
 
-  const handleImportConfig = (configString: string) => {
+  const handleImportConfig = (config: any) => {
     try {
-      const importedConfig = JSON.parse(configString);
+      // const importedConfig = JSON.parse(configString);
+
+      if (config) {
+        const newParams = new Params();
+        Object.assign(newParams, config);
+        setParams(newParams);
+        play();
+      }
 
       // TODO
     } catch (error) {
@@ -203,10 +212,9 @@ export default function Home() {
             Share and Configuration
           </h2>
           <div className="flex flex-wrap gap-4">
-            <ShareAndConfig
-              params={params}
-              handleImportConfig={handleImportConfig}
-            />
+            <ExportConfigDialog params={params} />
+            <ImportConfigDialog handleImportConfig={handleImportConfig} />
+            <CopyPermalinkButton params={params} />
           </div>
         </div>
       </main>

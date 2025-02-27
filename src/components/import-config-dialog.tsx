@@ -1,0 +1,72 @@
+"use client";
+
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Upload, AlertCircle, Check } from "lucide-react";
+
+export function ImportConfigDialog({
+  handleImportConfig,
+}: {
+  handleImportConfig: (config: string) => void;
+}) {
+  const [importConfig, setImportConfig] = useState("");
+  const [importError, setImportError] = useState<string | null>(null);
+  const [importSuccess, setImportSuccess] = useState(false);
+
+  const handleOnChange = (configString: string) => {
+    setImportConfig(configString);
+    setImportError(null);
+    setImportSuccess(false);
+
+    try {
+      const importedConfig = JSON.parse(configString);
+      setImportSuccess(true);
+      handleImportConfig(importedConfig);
+    } catch (error) {
+      setImportError("Invalid JSON format");
+    }
+  };
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button className="flex items-center">
+          <Upload className="mr-2 h-4 w-4" /> Import Config
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="bg-background text-foreground">
+        <DialogHeader>
+          <DialogTitle>Import Configuration</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <Textarea
+            placeholder="Paste your configuration JSON here"
+            className="min-h-[200px] bg-muted text-foreground"
+            value={importConfig}
+            onChange={(e) => handleOnChange(e.target.value)}
+          />
+          {importError && (
+            <div className="flex items-center text-red-500">
+              <AlertCircle className="mr-2 h-4 w-4" />
+              <span>{importError}</span>
+            </div>
+          )}
+          {importSuccess && (
+            <div className="flex items-center text-green-500">
+              <Check className="mr-2 h-4 w-4" />
+              <span>Configuration successfully imported!</span>
+            </div>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
