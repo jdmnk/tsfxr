@@ -42,7 +42,7 @@ export const UI_PARAMS: UiParam[] = [
 
   { key: "p_hpf_freq", label: "High-Pass Cutoff Frequency" },
   { key: "p_hpf_ramp", label: "High-Pass Cutoff Sweep" },
-];
+] as const;
 
 export const UI_GENERATOR_CONFIG = [
   { key: "random", label: "Random" },
@@ -56,4 +56,4 @@ export const UI_GENERATOR_CONFIG = [
   { key: "blipSelect", label: "Blip/Select" },
   { key: "synth", label: "Synth" },
   { key: "tone", label: "Tone" },
-];
+] as const;

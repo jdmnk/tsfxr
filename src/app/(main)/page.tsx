@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { convert, Params, SoundEffect } from "@/lib/sfxr/sfxr";
+import { convert, Params, SoundEffect, waveforms } from "@/lib/sfxr/sfxr";
 import { useDebouncedCallback } from "use-debounce";
 import { Button } from "@/components/ui/button";
 import { ParamSection } from "@/components/param-section";
@@ -28,6 +28,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { WaveformBackground } from "@/components/waveform-background";
 
 export default function Home() {
   // State for the current sound parameters.
@@ -173,6 +174,7 @@ export default function Home() {
 
   return (
     <main className="max-w-[1200px] mx-auto p-6">
+      <WaveformBackground waveform={params.wave_type} />
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Synthesizer</h1>
         <div className="flex items-center space-x-2">
@@ -222,16 +224,28 @@ export default function Home() {
               onValueChange={(value) => updateParam("wave_type", +value)}
               className="gap-4"
             >
-              <ToggleGroupItem className="flex-1" value="0">
+              <ToggleGroupItem
+                className="flex-1"
+                value={waveforms.SQUARE.toString()}
+              >
                 Square
               </ToggleGroupItem>
-              <ToggleGroupItem className="flex-1" value="1">
+              <ToggleGroupItem
+                className="flex-1"
+                value={waveforms.SAWTOOTH.toString()}
+              >
                 Sawtooth
               </ToggleGroupItem>
-              <ToggleGroupItem className="flex-1" value="2">
+              <ToggleGroupItem
+                className="flex-1"
+                value={waveforms.SINE.toString()}
+              >
                 Sine
               </ToggleGroupItem>
-              <ToggleGroupItem className="flex-1 relative" value="4">
+              <ToggleGroupItem
+                className="flex-1 relative"
+                value={waveforms.TRIANGLE.toString()}
+              >
                 Triangle
                 <Badge
                   className="absolute -top-2 -right-2 px-1 py-0.5 text-[10px] bg-primary text-primary-foreground"
@@ -240,7 +254,10 @@ export default function Home() {
                   NEW
                 </Badge>
               </ToggleGroupItem>
-              <ToggleGroupItem className="flex-1" value="3">
+              <ToggleGroupItem
+                className="flex-1"
+                value={waveforms.NOISE.toString()}
+              >
                 Noise
               </ToggleGroupItem>
             </ToggleGroup>
