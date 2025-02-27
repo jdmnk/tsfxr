@@ -1,63 +1,69 @@
 import { waveforms } from "@/lib/sfxr/sfxr";
 
 export function WaveformBackground({ waveform }: { waveform: number }) {
-  const width = 200; // Increased width for a more natural flow
-  const height = 40; // Adjusted height for better spacing
+  const width = 200; // Ensures a smooth repeating pattern
+  const height = 40; // Provides a balanced wave appearance
 
   const getWaveformPath = (type: number) => {
     let path = "";
 
-    switch (type) {
-      case waveforms.SINE:
-        // Use multiple sine cycles to ensure seamless pattern
-        path = `M0 ${height / 2}`;
-        for (let i = 0; i < 2; i++) {
-          // Repeat two cycles
-          path += ` Q${width / 8 + (i * width) / 2} 0 ${
-            width / 4 + (i * width) / 2
-          } ${height / 2}`;
-          path += ` T${width / 2 + (i * width) / 2} ${height / 2}`;
-        }
-        break;
-      case waveforms.SQUARE:
-        path = `M0 ${height / 2}`;
-        for (let i = 0; i < 4; i++) {
-          const x = (i * width) / 4;
-          path += ` L${x} ${i % 2 === 0 ? 0 : height}`;
-        }
-        path += ` L${width} ${height / 2}`;
-        break;
-      case waveforms.SAWTOOTH:
-        path = `M0 ${height}`;
-        for (let i = 0; i < 2; i++) {
-          // Two repeating cycles
-          path += ` L${width / 4 + (i * width) / 2} 0`;
-          path += ` L${width / 2 + (i * width) / 2} ${height}`;
-        }
-        break;
-      case waveforms.TRIANGLE:
-        path = `M0 ${height / 2}`;
-        for (let i = 0; i < 2; i++) {
-          // Two repeating cycles
-          path += ` L${width / 8 + (i * width) / 2} 0`;
-          path += ` L${width / 4 + (i * width) / 2} ${height}`;
-          path += ` L${width / 2 + (i * width) / 2} ${height / 2}`;
-        }
-        break;
-      case waveforms.NOISE:
-        const noiseSteps = 20;
-        const noiseStep = width / noiseSteps;
-        path = `M0 ${height / 2}`;
-        for (let i = 0; i <= noiseSteps; i++) {
-          const x = i * noiseStep;
-          const y = Math.random() * height * 0.8 + height * 0.1;
-          path += ` L${x} ${y}`;
-        }
-        break;
-      default:
-        path = `M0 ${height / 2} L${width} ${height / 2}`;
-    }
+    if (type === waveforms.SINE) {
+      path = `M0 ${height / 2}`;
+      for (let i = 0; i < 2; i++) {
+        // Two sine cycles for smooth repeat
+        path += ` Q${width / 8 + (i * width) / 2} 0 ${
+          width / 4 + (i * width) / 2
+        } ${height / 2}`;
+        path += ` T${width / 2 + (i * width) / 2} ${height / 2}`;
+      }
+    } else if (type === waveforms.SQUARE) {
+      // Square waves with vertical spacing
+      const squareSteps = 2; // Defines two full cycles
+      const squareWidth = width / squareSteps;
+      const pulseHeight = height * 0.6; // Makes pulses smaller to avoid touching
+      const baseY = height * 0.7; // Lowers the wave slightly for spacing
 
+      path = `M0 ${baseY}`;
+      for (let i = 0; i < squareSteps; i++) {
+        const x = i * squareWidth;
+        path += ` L${x} ${baseY}`; // Start at base
+        path += ` L${x} ${baseY - pulseHeight}`; // Pulse up
+        path += ` L${x + squareWidth / 2} ${baseY - pulseHeight}`; // Hold high
+        path += ` L${x + squareWidth / 2} ${baseY}`; // Pulse down
+      }
+      path += ` L${width} ${baseY}`; // Connect back to base
+    } else if (type === waveforms.SAWTOOTH) {
+      const sawSteps = 2; // Number of repeating cycles
+      const sawWidth = width / sawSteps;
+      const baseY = height * 0.7; // Lower the wave for spacing
+      const peakY = baseY - height * 0.6; // Ensure it doesn't touch the top
+
+      path = `M0 ${baseY}`; // Start at baseline
+
+      for (let i = 0; i < sawSteps; i++) {
+        const xStart = i * sawWidth;
+        path += ` L${xStart + sawWidth} ${peakY}`; // Diagonal up
+        path += ` L${xStart + sawWidth} ${baseY}`; // Vertical drop
+      }
+    } else if (type === waveforms.TRIANGLE) {
+      // Ensure the sawtooth is perfectly repeating with no gaps
+      path = `M0 ${height}`;
+      for (let i = 0; i < 2; i++) {
+        // Two cycles
+        path += ` L${width / 4 + (i * width) / 2} 0`;
+        path += ` L${width / 2 + (i * width) / 2} ${height}`;
+      }
+    } else if (type === waveforms.NOISE) {
+      // Generate randomized points but ensure seamless looping
+      const noiseSteps = 20;
+      const noiseStep = width / noiseSteps;
+      path = `M0 ${height / 2}`;
+      for (let i = 0; i <= noiseSteps; i++) {
+        const x = i * noiseStep;
+        const y = Math.random() * height * 0.8 + height * 0.1;
+        path += ` L${x} ${y}`;
+      }
+    }
     return path;
   };
 
@@ -68,7 +74,7 @@ export function WaveformBackground({ waveform }: { waveform: number }) {
           id={`pattern-${waveform}`}
           x="0"
           y="0"
-          width={width} // Wider width ensures seamless repeating pattern
+          width={width} // Ensures waves flow smoothly
           height={height}
           patternUnits="userSpaceOnUse"
         >
