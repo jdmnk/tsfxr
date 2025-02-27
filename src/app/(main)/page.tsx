@@ -108,7 +108,8 @@ export default function Home() {
   // Copy b58 code to clipboard.
   const handleCopyPermalink = async () => {
     try {
-      await navigator.clipboard.writeText(b58);
+      const permaLink = window.location.href + "#" + params.toB58();
+      await navigator.clipboard.writeText(permaLink);
       toast.success("Permalink copied to clipboard.", {
         // description: "Permalink copied .",
       });
