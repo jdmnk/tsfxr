@@ -55,7 +55,7 @@ export function ImportConfigDialog({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="flex items-center">
+        <Button className="flex items-center w-full">
           <Upload className="mr-2 h-4 w-4" /> Import Config
         </Button>
       </DialogTrigger>

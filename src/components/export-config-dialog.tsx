@@ -43,7 +43,7 @@ export function ExportConfigDialog({ params }: { params: Params }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="flex items-center">
+        <Button className="flex items-center w-full">
           <Download className="mr-2 h-4 w-4" /> Export Config
         </Button>
       </DialogTrigger>

@@ -19,7 +19,7 @@ export function CopyPermalinkButton({ params }: { params: Params }) {
   };
 
   return (
-    <Button onClick={handleCopyPermalink} className="flex items-center">
+    <Button onClick={handleCopyPermalink} className="flex items-center w-full">
       <Link className="mr-2 h-4 w-4" /> Copy Permalink
     </Button>
   );

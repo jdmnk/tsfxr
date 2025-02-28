@@ -144,76 +144,78 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Export Section */}
-          <div className="space-y-6 bg-card text-card-foreground p-4 rounded-lg shadow">
-            <h2 className="text-lg font-semibold">Sound</h2>
-            <div className="flex flex-col items-center gap-2">
-              {analyser && <Oscilloscope analyser={analyser} />}
-            </div>
+          <div className="space-y-6">
+            {/* Export Section */}
+            <div className="bg-card text-card-foreground p-4 rounded-lg shadow space-y-6">
+              <h2 className="text-lg font-semibold">Sound</h2>
+              <div className="flex flex-col items-center gap-2">
+                {analyser && <Oscilloscope analyser={analyser} />}
+              </div>
 
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <Label className="text-sm">Gain</Label>
-                  <span className="text-sm text-muted-foreground">
-                    {convert.units["sound_vol"](params.sound_vol)}
-                  </span>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <Label className="text-sm">Gain</Label>
+                    <span className="text-sm text-muted-foreground">
+                      {convert.units["sound_vol"](soundVol)}
+                    </span>
+                  </div>
+
+                  <Slider
+                    min={0}
+                    max={1}
+                    step={0.001}
+                    value={[soundVol ? soundVol : 0]}
+                    onValueChange={(e) => {
+                      setSoundVol(e[0]);
+                      play();
+                    }}
+                    className="w-full"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">
+                    Sample Rate (Hz)
+                  </Label>
+
+                  <ParamToggleGroup
+                    options={["44100", "22050", "11025", "5512"]}
+                    labels={["44k", "22k", "11k", "6k"]}
+                    onChange={(value) => {
+                      setSampleRate(+value);
+                      play();
+                    }}
+                    value={sampleRate.toString()}
+                  />
                 </div>
 
-                <Slider
-                  min={0}
-                  max={1}
-                  step={0.001}
-                  value={[soundVol ? soundVol : 0]}
-                  onValueChange={(e) => {
-                    setSoundVol(e[0]);
-                    play();
-                  }}
-                  className="w-full"
-                />
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Sample Size</Label>
+
+                  <ParamToggleGroup
+                    options={["16", "8"]}
+                    labels={["16 bit", "8 bit"]}
+                    onChange={(value) => {
+                      setSampleSize(+value);
+                      play();
+                    }}
+                    value={sampleSize.toString()}
+                  ></ParamToggleGroup>
+                </div>
+
+                <FileExport params={params} sound={sound} fileName={fileName} />
               </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Sample Rate (Hz)</Label>
-
-                <ParamToggleGroup
-                  options={["44100", "22050", "11025", "5512"]}
-                  labels={["44k", "22k", "11k", "6k"]}
-                  onChange={(value) => {
-                    setSampleRate(+value);
-                    play();
-                  }}
-                  value={sampleRate.toString()}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Sample Size</Label>
-
-                <ParamToggleGroup
-                  options={["16", "8"]}
-                  labels={["16 bit", "8 bit"]}
-                  onChange={(value) => {
-                    setSampleSize(+value);
-                    play();
-                  }}
-                  value={sampleSize.toString()}
-                ></ParamToggleGroup>
-              </div>
-
-              <FileExport params={params} sound={sound} fileName={fileName} />
             </div>
-          </div>
-        </div>
 
-        {/* Share and Configuration */}
-        <div className="mt-6 bg-card text-card-foreground p-4 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-4">
-            Share and Configuration
-          </h2>
-          <div className="flex flex-wrap gap-4">
-            <ExportConfigDialog params={params} />
-            <ImportConfigDialog handleImportConfig={handleImportConfig} />
-            <CopyPermalinkButton params={params} />
+            <div className="bg-card text-card-foreground p-4 rounded-lg shadow space-y-6">
+              <h2 className="text-lg font-semibold">Share</h2>
+
+              <div className="space-y-4">
+                <ExportConfigDialog params={params} />
+                <ImportConfigDialog handleImportConfig={handleImportConfig} />
+                <CopyPermalinkButton params={params} />
+              </div>
+            </div>
           </div>
         </div>
 
