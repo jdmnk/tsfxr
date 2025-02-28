@@ -1,29 +1,28 @@
 import { Params, convert, parameters } from "@/lib/sfxr/sfxr";
 import { Slider } from "./ui/slider";
-import { UI_PARAMS } from "@/lib/ui/ui.const";
+import { UI_PARAMS_MAP, UiParamsMapKey } from "@/lib/ui/ui.const";
 import { Label } from "./ui/label";
 import { UpdateParamFn } from "@/types";
 
-export function ParamSection({
+export function ParamsGroup({
   title,
-  uiParamsPrefix,
+  uiParams,
   params,
   updateParam,
+  disabled,
 }: {
   title: string;
-  uiParamsPrefix: string;
+  uiParams: UiParamsMapKey[];
   params: Params;
   updateParam: UpdateParamFn;
+  disabled?: boolean;
 }) {
-  const uiParams = UI_PARAMS.filter((param) =>
-    param.key.startsWith(uiParamsPrefix)
-  );
   return (
     <div className="space-y-4">
       <Label className="text-base font-medium">{title}</Label>
       {uiParams.map((param) => {
-        const paramName = param.key;
-        const paramLabel = param.label;
+        const paramName = param;
+        const paramLabel = UI_PARAMS_MAP[param];
 
         const signed = parameters.signed.includes(paramName);
         const min = signed ? -1 : 0;
@@ -36,7 +35,10 @@ export function ParamSection({
         const unitsFn = convert.units[paramName];
 
         return (
-          <div key={paramName} className="space-y-2">
+          <div
+            key={paramName}
+            className={`space-y-2 ${disabled ? "opacity-50" : ""}`}
+          >
             <div className="flex justify-between">
               <Label className="text-sm">{paramLabel}</Label>
               <span className="text-sm text-muted-foreground">
@@ -52,6 +54,7 @@ export function ParamSection({
                 updateParam(paramName, e[0]);
               }}
               className="w-full"
+              disabled={disabled}
             />
           </div>
         );

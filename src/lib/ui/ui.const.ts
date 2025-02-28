@@ -6,43 +6,40 @@ type NumericKeys<T> = {
 
 type NumericParamsKeys = NumericKeys<Params>;
 
-export type UiParam = {
-  key: NumericParamsKeys;
-  label: string;
-};
+export const UI_PARAMS_MAP: Partial<Record<NumericParamsKeys, string>> = {
+  p_env_attack: "Attack Time",
+  p_env_sustain: "Sustain Time",
+  p_env_punch: "Sustain Punch",
+  p_env_decay: "Decay Time",
 
-export const UI_PARAMS: UiParam[] = [
-  { key: "p_env_attack", label: "Attack Time" },
-  { key: "p_env_sustain", label: "Sustain Time" },
-  { key: "p_env_punch", label: "Sustain Punch" },
-  { key: "p_env_decay", label: "Decay Time" },
+  p_base_freq: "Start Frequency",
+  p_freq_limit: "Min Frequency Cutoff",
+  p_freq_ramp: "Slide",
+  p_freq_dramp: "Delta Slide",
 
-  { key: "p_base_freq", label: "Start Frequency" },
-  { key: "p_freq_limit", label: "Min Frequency Cutoff" },
-  { key: "p_freq_ramp", label: "Slide" },
-  { key: "p_freq_dramp", label: "Delta Slide" },
+  p_vib_strength: "Vibrato Strength",
+  p_vib_speed: "Vibrato Speed",
 
-  { key: "p_vib_strength", label: "Vibrato Strength" },
-  { key: "p_vib_speed", label: "Vibrato Speed" },
+  p_arp_mod: "Arpeggio Multiplier",
+  p_arp_speed: "Arpeggio Speed",
 
-  { key: "p_arp_mod", label: "Arpeggio Multiplier" },
-  { key: "p_arp_speed", label: "Arpeggio Speed" },
+  p_duty: "Duty Cycle",
+  p_duty_ramp: "Duty Cycle Sweep",
 
-  { key: "p_duty", label: "Duty Cycle" },
-  { key: "p_duty_ramp", label: "Duty Cycle Sweep" },
+  p_repeat_speed: "Retrigger Rate",
 
-  { key: "p_repeat_speed", label: "Retrigger Rate" },
+  p_pha_offset: "Flanger Offset",
+  p_pha_ramp: "Flanger Sweep",
 
-  { key: "p_pha_offset", label: "Flanger Offset" },
-  { key: "p_pha_ramp", label: "Flanger Sweep" },
+  p_lpf_freq: "Low-Pass Cutoff Frequency",
+  p_lpf_ramp: "Low-Pass Cutoff Sweep",
+  p_lpf_resonance: "Low-Pass Resonance",
 
-  { key: "p_lpf_freq", label: "Low-Pass Cutoff Frequency" },
-  { key: "p_lpf_ramp", label: "Low-Pass Cutoff Sweep" },
-  { key: "p_lpf_resonance", label: "Low-Pass Resonance" },
+  p_hpf_freq: "High-Pass Cutoff Frequency",
+  p_hpf_ramp: "High-Pass Cutoff Sweep",
+} as const;
 
-  { key: "p_hpf_freq", label: "High-Pass Cutoff Frequency" },
-  { key: "p_hpf_ramp", label: "High-Pass Cutoff Sweep" },
-] as const;
+export type UiParamsMapKey = keyof typeof UI_PARAMS_MAP;
 
 export const UI_GENERATOR_CONFIG = [
   { key: "random", label: "Random" },
