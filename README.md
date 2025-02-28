@@ -1,34 +1,45 @@
-Game sound effects generator built with JavaScript.
+# 🎵 TSFXR – Game Sound Effects Generator
 
-Based on the amazing [jsfxr](https://github.com/chr15m/jsfxr).
+A modern game sound effects generator built with **TypeScript, React, Next.js, shadcn, and Tailwind**.
 
-## About
+Inspired by the amazing [jsfxr](https://github.com/chr15m/jsfxr).
 
-This projects presents a number of upgrades and bug fixes on top of `jsfxr`.
+---
 
-Upgrades:
+## 🚀 About
 
-- modern tech stack (jQuery -> React)
+TSFXR is a web app for generating retro-style game sound effects.
 
-Bug fixes:
+A passion project born from my love of game audio and modern web development.
 
-- random generation would go out of bounds on certain params
+---
 
-## Getting Started
+## ⚡ Getting Started
 
-To run the development server:
+Clone the repository and start the development server:
 
 ```bash
+pnpm install
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then, open [http://localhost:3000](http://localhost:3000) in your browser.
 
-# Links
+---
 
-- Application: _here comes the deployed website link_
+## 🌍 Live Demo
 
-# Thanks
+Try it out here: **[TSFXR.app](https://tsfxr.app)**
 
-- Dr. Petter for inventing sfxr.
-- [Chris McCormick](https://github.com/chr15m) for creating [jsfxr](https://github.com/chr15m/jsfxr).
+---
+
+## 🙏 Credits
+
+- **Dr. Petter** for inventing **sfxr**.
+- **[Chris McCormick](https://github.com/chr15m)** for creating **[jsfxr](https://github.com/chr15m/jsfxr)**.
+
+---
+
+### 🔗 Stay Connected
+
+Have suggestions or feedback? Feel free to contribute or reach out! 🚀
