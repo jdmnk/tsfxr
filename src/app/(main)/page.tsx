@@ -26,7 +26,13 @@ export default function Home() {
     sound,
     analyser,
     fileName,
+    soundVol,
+    sampleRate,
+    sampleSize,
     setParams,
+    setSoundVol,
+    setSampleRate,
+    setSampleSize,
     play,
     updateParam,
     generateSoundFromPreset,
@@ -156,9 +162,10 @@ export default function Home() {
                   min={0}
                   max={1}
                   step={0.001}
-                  value={[params.sound_vol ? params.sound_vol : 0]}
+                  value={[soundVol ? soundVol : 0]}
                   onValueChange={(e) => {
-                    updateParam("sound_vol", e[0]);
+                    setSoundVol(e[0]);
+                    play();
                   }}
                   className="w-full"
                 />
@@ -170,22 +177,24 @@ export default function Home() {
                   options={["44100", "22050", "11025", "5512"]}
                   labels={["44k", "22k", "11k", "6k"]}
                   onChange={(value) => {
-                    updateParam("sample_rate", +value);
+                    setSampleRate(+value);
+                    play();
                   }}
-                  value={params.sample_rate.toString()}
+                  value={sampleRate.toString()}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Sample Rate (Hz)</Label>
+                <Label className="text-sm font-medium">Sample Size</Label>
 
                 <ParamToggleGroup
                   options={["16", "8"]}
                   labels={["16 bit", "8 bit"]}
                   onChange={(value) => {
-                    updateParam("sample_size", +value);
+                    setSampleSize(+value);
+                    play();
                   }}
-                  value={params.sample_size.toString()}
+                  value={sampleSize.toString()}
                 ></ParamToggleGroup>
               </div>
 

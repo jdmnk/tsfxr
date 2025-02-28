@@ -3,12 +3,19 @@ import { Params, SoundEffect } from "@/lib/sfxr/sfxr";
 
 type SoundStore = {
   params: Params;
+  soundVol: number;
+  sampleRate: number;
+  sampleSize: number;
+
   sound: SoundEffect;
   audio: any;
   analyser: AnalyserNode;
   fileName: string;
 
   setParams: (newParams: Params) => void;
+  setSoundVol: (soundVol: number) => void;
+  setSampleRate: (sampleRate: number) => void;
+  setSampleSize: (sampleSize: number) => void;
   generateSound: () => void;
   play: () => void;
   updateParam: <K extends keyof Params>(key: K, value: Params[K]) => void;
@@ -17,11 +24,19 @@ type SoundStore = {
 };
 
 // Ensure sound is generated on store creation to avoid null issues
+const initialParams = new Params();
 const initialSound = new SoundEffect(new Params()).generate();
 const initialAudio = initialSound.getAudio();
 
 export const useSoundStore = create<SoundStore>((set, get) => ({
   params: new Params(),
+
+  // These params are set globally for all sounds
+  soundVol: initialParams.sound_vol,
+  sampleRate: initialParams.sample_rate,
+  sampleSize: initialParams.sample_size,
+  // End global params
+
   sound: initialSound,
   audio: initialAudio,
   analyser: initialAudio.analyser,
@@ -31,8 +46,23 @@ export const useSoundStore = create<SoundStore>((set, get) => ({
     set({ params: newParams });
   },
 
+  setSoundVol: (soundVol: number) => {
+    set({ soundVol });
+  },
+
+  setSampleRate: (sampleRate: number) => {
+    set({ sampleRate });
+  },
+
+  setSampleSize: (sampleSize: number) => {
+    set({ sampleSize });
+  },
+
   generateSound: () => {
-    const params = get().params;
+    const params = get().params.clone();
+    params.sound_vol = get().soundVol;
+    params.sample_rate = get().sampleRate;
+    params.sample_size = get().sampleSize;
     const sound = new SoundEffect(params).generate();
     const audio = sound.getAudio();
 
