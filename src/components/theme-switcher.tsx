@@ -7,7 +7,7 @@ export function ThemeSwitcher() {
 
   return (
     <div className="flex justify-center items-center space-x-2">
-      <ToggleGroup type="single" value={theme} onValueChange={setTheme}>
+      <ToggleGroup value={theme} onValueChange={setTheme}>
         <ToggleGroupItem value="light">
           Light
           <Sun />

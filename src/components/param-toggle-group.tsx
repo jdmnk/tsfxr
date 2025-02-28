@@ -12,14 +12,12 @@ export function ParamToggleGroup({
   onChange: (value: string) => void;
 }) {
   return (
-    <div className="">
-      <ToggleGroup type="single" value={value} onValueChange={onChange}>
-        {options.map((option, index) => (
-          <ToggleGroupItem key={option} value={option} className="flex-1">
-            {labels[index]}
-          </ToggleGroupItem>
-        ))}
-      </ToggleGroup>
-    </div>
+    <ToggleGroup value={value} onValueChange={onChange}>
+      {options.map((option, index) => (
+        <ToggleGroupItem key={option} value={option} className="flex-1">
+          {labels[index]}
+        </ToggleGroupItem>
+      ))}
+    </ToggleGroup>
   );
 }
