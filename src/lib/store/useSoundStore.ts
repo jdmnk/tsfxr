@@ -16,7 +16,6 @@ type SoundStore = {
   setSoundVol: (soundVol: number) => void;
   setSampleRate: (sampleRate: number) => void;
   setSampleSize: (sampleSize: number) => void;
-  generateSound: () => void;
   play: () => void;
   updateParam: <K extends keyof Params>(key: K, value: Params[K]) => void;
   generateSoundFromPreset: (fx: string) => void;
@@ -58,21 +57,6 @@ export const useSoundStore = create<SoundStore>((set, get) => ({
     set({ sampleSize });
   },
 
-  generateSound: () => {
-    const params = get().params.clone();
-    params.sound_vol = get().soundVol;
-    params.sample_rate = get().sampleRate;
-    params.sample_size = get().sampleSize;
-    const sound = new SoundEffect(params).generate();
-    const audio = sound.getAudio();
-
-    set({
-      sound,
-      audio,
-      analyser: audio.analyser,
-    });
-  },
-
   generateSoundFromPreset: (fx: string) => {
     const newParams = new Params();
     let fileName = "preset.wav";
@@ -104,7 +88,18 @@ export const useSoundStore = create<SoundStore>((set, get) => ({
   },
 
   play: () => {
-    get().generateSound();
+    const params = get().params.clone();
+    params.sound_vol = get().soundVol;
+    params.sample_rate = get().sampleRate;
+    params.sample_size = get().sampleSize;
+    const sound = new SoundEffect(params).generate();
+    const audio = sound.getAudio();
+
+    set({
+      sound,
+      audio,
+      analyser: audio.analyser,
+    });
     get().audio?.play();
   },
 }));
