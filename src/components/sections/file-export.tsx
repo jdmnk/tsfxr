@@ -41,7 +41,7 @@ export function FileExport({
           <div>{numSamples}</div>
           <div className="flex items-center">
             Clipped:
-            <Tooltip>
+            <Tooltip delayDuration={500}>
               <TooltipTrigger asChild>
                 <Info className="h-4 w-4 ml-1 text-muted-foreground cursor-help" />
               </TooltipTrigger>
