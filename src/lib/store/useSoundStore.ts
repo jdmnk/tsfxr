@@ -40,7 +40,6 @@ export const useSoundStore = create<SoundStore>((set, get) => ({
       sound,
       audio,
       analyser: audio.analyser,
-      fileName: "sfx.wav",
     });
   },
 

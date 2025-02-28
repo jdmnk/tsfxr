@@ -17,6 +17,18 @@ export function FileExport({
     sound.header.subChunk2Size / (sound.header.bitsPerSample >> 3);
   const clipping = sound.clipping;
 
+  // Function to trigger download
+  const handleDownload = () => {
+    if (sound?.dataURI) {
+      const link = document.createElement("a");
+      link.href = sound.dataURI;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
   return (
     <>
       <div className="space-y-2 pt-6">
@@ -47,10 +59,8 @@ export function FileExport({
         </div>
       </div>
       <div className="flex justify-between text-sm">
-        <Button className="w-full">
-          <a id="wav" href={sound?.dataURI || "#"} download={fileName}>
-            Download
-          </a>
+        <Button className="w-full" onClick={handleDownload}>
+          Download
         </Button>
       </div>
     </>
