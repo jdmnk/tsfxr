@@ -39,6 +39,25 @@ export const UI_PARAMS_MAP: Partial<Record<NumericParamsKeys, string>> = {
   p_hpf_ramp: "High-Pass Cutoff Sweep",
 } as const;
 
+export const UI_PARAMS_GROUPS_DESC = {
+  envelope:
+    "Controls the shape of the sound over time, including attack, sustain, and decay.",
+  frequency:
+    "Defines the starting frequency and modulation of pitch over time.",
+  vibrato: "Applies periodic modulation to the frequency for a vibrato effect.",
+  arpeggio:
+    "Modifies the frequency in discrete steps to create an arpeggiated effect.",
+  dutyCycle:
+    "Controls the duty cycle of the waveform, affecting timbre and harmonics.",
+  retrigger: "Defines how often the sound retriggers automatically.",
+  flanger:
+    "Applies a flanger effect by delaying and modulating a copy of the sound.",
+  lowPassFilter:
+    "Filters out high frequencies and controls how they evolve over time.",
+  highPassFilter:
+    "Filters out low frequencies and controls how they evolve over time.",
+} as const;
+
 export type UiParamsMapKey = keyof typeof UI_PARAMS_MAP;
 
 export const UI_GENERATOR_CONFIG = [

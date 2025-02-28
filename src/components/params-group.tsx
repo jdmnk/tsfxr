@@ -3,15 +3,21 @@ import { Slider } from "./ui/slider";
 import { UI_PARAMS_MAP, UiParamsMapKey } from "@/lib/ui/ui.const";
 import { Label } from "./ui/label";
 import { UpdateParamFn } from "@/types";
+import { Tooltip, TooltipContent } from "./ui/tooltip";
+import { TooltipTrigger } from "@radix-ui/react-tooltip";
+import { Info } from "lucide-react";
+import { Button } from "./ui/button";
 
 export function ParamsGroup({
   title,
+  tooltip,
   uiParams,
   params,
   updateParam,
   disabled,
 }: {
   title: string;
+  tooltip: string;
   uiParams: UiParamsMapKey[];
   params: Params;
   updateParam: UpdateParamFn;
@@ -19,7 +25,20 @@ export function ParamsGroup({
 }) {
   return (
     <div className="space-y-4">
-      <Label className="text-base font-medium">{title}</Label>
+      <div className="flex items-center justify-between">
+        <Label className="text-base font-medium">{title}</Label>
+        <Tooltip delayDuration={500}>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+              <Info className="h-4 w-4" />
+              <span className="sr-only">Info for {title}</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p className="max-w-xs">{tooltip}</p>
+          </TooltipContent>
+        </Tooltip>
+      </div>
       {uiParams.map((param) => {
         const paramName = param;
         const paramLabel = UI_PARAMS_MAP[param];
