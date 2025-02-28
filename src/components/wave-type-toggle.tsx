@@ -12,7 +12,6 @@ export function WaveTypeToggle({
 }) {
   return (
     <ToggleGroup
-      type="single"
       value={params.wave_type.toString()}
       onValueChange={(value) => updateParam("wave_type", +value)}
       className="gap-4"
