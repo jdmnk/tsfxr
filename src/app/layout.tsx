@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { APP_AUTHOR, APP_AUTHOR_URL, APP_NAME, APP_URL } from "@/lib/app.const";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,10 +16,21 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const title = `${APP_NAME} - 8-bit Sound Effect Generator`;
+
 export const metadata: Metadata = {
-  title: "tsfxr - 8-bit Sound Effect Generator",
+  title: title,
   description:
     "A TypeScript-powered 8-bit sound effect generator for games, apps, and creative projects. Easily generate, tweak, and export retro sound effects.",
+  authors: [{ name: APP_AUTHOR, url: APP_AUTHOR_URL }],
+  applicationName: title,
+  referrer: "origin-when-cross-origin",
+  robots: "index, follow",
+  formatDetection: {
+    telephone: false,
+  },
+  creator: APP_AUTHOR,
+  publisher: APP_AUTHOR,
   keywords: [
     "8-bit sound generator",
     "retro sound effects",
@@ -30,31 +42,6 @@ export const metadata: Metadata = {
     "procedural sound effects",
     "NES sound generator",
   ],
-  openGraph: {
-    title: "tsfxr - 8-bit Sound Effect Generator",
-    description:
-      "Generate and customize retro-style 8-bit sound effects for your games and projects. Easy to use and export!",
-    url: "https://yourprojecturl.com", // TODO: Replace with actual URL
-    siteName: "tsfxr",
-    type: "website",
-    images: [
-      {
-        url: "https://yourprojecturl.com/og-image.png", // TODO: Replace with actual image
-        width: 1200,
-        height: 630,
-        alt: "tsfxr - 8-bit Sound Effect Generator",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "tsfxr - 8-bit Sound Generator",
-    description:
-      "Generate customizable 8-bit sound effects for games, apps, and creative projects. Free and open-source!",
-    images: ["https://yourprojecturl.com/twitter-image.png"], // TODO: Replace with actual image
-  },
-  authors: [{ name: "Your Name", url: "https://yourwebsite.com" }], // TODO: Replace with your details
-  robots: "index, follow",
 };
 
 export default function RootLayout({
@@ -68,7 +55,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} antialiased`}
     >
       <head>
-        <meta name="apple-mobile-web-app-title" content="tsfxr" />
+        <meta name="apple-mobile-web-app-title" content={APP_NAME} />
       </head>
       <body className={geistSans.className}>
         <ThemeProvider attribute="class" defaultTheme="dark">

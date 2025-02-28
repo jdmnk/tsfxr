@@ -19,6 +19,8 @@ import { useSoundStore } from "@/lib/store/useSoundStore";
 import { ExportConfigDialog } from "@/components/export-config-dialog";
 import { ImportConfigDialog } from "@/components/import-config-dialog";
 import { CopyPermalinkButton } from "@/components/copy-permalink-button";
+import { About } from "@/components/sections/about";
+import { Logo } from "@/components/logo";
 
 export default function Home() {
   const {
@@ -70,7 +72,7 @@ export default function Home() {
       <WaveformBackground waveform={params.wave_type} />
       <main className="max-w-[1200px] mx-auto p-6 relative z-10">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Synthesizer</h1>
+          <Logo />
           <div className="flex items-center space-x-2">
             <ThemeSwitcher />
           </div>
@@ -214,6 +216,8 @@ export default function Home() {
             <CopyPermalinkButton params={params} />
           </div>
         </div>
+
+        <About />
       </main>
     </div>
   );
