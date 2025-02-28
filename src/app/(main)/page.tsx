@@ -19,55 +19,29 @@ import { useSoundStore } from "@/lib/store/useSoundStore";
 import { ExportConfigDialog } from "@/components/export-config-dialog";
 import { ImportConfigDialog } from "@/components/import-config-dialog";
 import { CopyPermalinkButton } from "@/components/copy-permalink-button";
-import { UpdateParamFn } from "@/types";
 
 export default function Home() {
-  const { params, sound, analyser, fileName, setParams, play, updateParam } =
-    useSoundStore();
-
-  // Generate a new sound based on a preset.
-  const generateSoundFromPreset = (fx: string) => {
-    const newParams = new Params();
-
-    if (fx.startsWith("#")) {
-      newParams.fromB58(fx.slice(1));
-    } else {
-      // @ts-ignore
-      if (typeof newParams[fx] === "function") {
-        // @ts-ignore
-        newParams[fx]();
-      }
-    }
-    setParams(newParams);
-    play();
-  };
-
-  // Mutate (slightly change) current parameters.
-  const mutateParams = () => {
-    const newp = params.clone();
-    newp.mutate();
-    setParams(newp);
-    play();
-  };
+  const {
+    params,
+    sound,
+    analyser,
+    fileName,
+    setParams,
+    play,
+    updateParam,
+    generateSoundFromPreset,
+    mutateParams,
+  } = useSoundStore();
 
   // Debounced play for use with sliders.
   const debouncedPlay = useDebouncedCallback(play, 300, { leading: true });
-
-  const handleSliderChange: UpdateParamFn = (key, value) => {
-    updateParam(key, value);
-    debouncedPlay();
-  };
-
-  const handleWaveTypeChange: UpdateParamFn = (key, value) => {
-    updateParam(key, value);
-    play();
-  };
 
   // On mount, generate the sound from the permalink preset (if any).
   useEffect(() => {
     const hash = window.location.hash;
 
     if (hash.length > 1) {
+      // Load sound, but don't play it.
       generateSoundFromPreset(hash);
     }
   }, []);
@@ -105,7 +79,10 @@ export default function Home() {
               {UI_GENERATOR_CONFIG.map((config) => (
                 <Button
                   key={config.key}
-                  onClick={() => generateSoundFromPreset(config.key)}
+                  onClick={() => {
+                    generateSoundFromPreset(config.key);
+                    play();
+                  }}
                   className="w-full"
                 >
                   {config.label}
@@ -116,7 +93,10 @@ export default function Home() {
                 <Button
                   className="w-full"
                   variant="outline"
-                  onClick={mutateParams}
+                  onClick={() => {
+                    mutateParams(params);
+                    play();
+                  }}
                 >
                   Mutate
                 </Button>
@@ -138,14 +118,20 @@ export default function Home() {
             <div className="space-y-4">
               <WaveTypeToggle
                 params={params}
-                updateParam={handleWaveTypeChange}
+                updateParam={(key, value) => {
+                  updateParam(key, value);
+                  play();
+                }}
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <ManualSettings
                 params={params}
-                updateParam={handleSliderChange}
+                updateParam={(key, value) => {
+                  updateParam(key, value);
+                  debouncedPlay();
+                }}
               />
             </div>
           </div>
