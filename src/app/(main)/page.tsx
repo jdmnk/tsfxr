@@ -144,9 +144,9 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="space-y-6">
+          <div className="flex flex-col gap-6">
             {/* Export Section */}
-            <div className="bg-card text-card-foreground p-4 rounded-lg shadow space-y-6">
+            <div className="bg-card text-card-foreground p-4 rounded-lg shadow space-y-6 flex-grow">
               <h2 className="text-lg font-semibold">Sound</h2>
               <div className="flex flex-col items-center gap-2">
                 {analyser && <Oscilloscope analyser={analyser} />}
@@ -207,7 +207,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="bg-card text-card-foreground p-4 rounded-lg shadow space-y-6">
+            <div className="bg-card text-card-foreground p-4 rounded-lg shadow space-y-6 flex-grow">
               <h2 className="text-lg font-semibold">Share</h2>
 
               <div className="space-y-4">
