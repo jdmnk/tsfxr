@@ -21,6 +21,10 @@ import { ImportConfigDialog } from "@/components/import-config-dialog";
 import { CopyPermalinkButton } from "@/components/copy-permalink-button";
 import { About } from "@/components/sections/about";
 import { Logo } from "@/components/logo";
+import { toast } from "sonner";
+
+const MemoizedOscilloscope = React.memo(Oscilloscope);
+const MemoizedWaveformBackground = React.memo(WaveformBackground);
 
 export default function Home() {
   const {
@@ -49,8 +53,11 @@ export default function Home() {
     const hash = window.location.hash;
 
     if (hash.length > 1) {
-      // Load sound, but don't play it.
-      generateSoundFromPreset(hash);
+      try {
+        generateSoundFromPreset(hash);
+      } catch (error) {
+        toast.error("Failed to load sound from permalink");
+      }
     }
   }, []);
 
@@ -69,7 +76,7 @@ export default function Home() {
 
   return (
     <div className="w-full min-h-screen bg-background text-foreground relative">
-      <WaveformBackground waveform={params.wave_type} />
+      <MemoizedWaveformBackground waveform={params.wave_type} />
       <main className="max-w-[1200px] mx-auto p-6 relative z-10">
         <div className="flex justify-between items-center mb-6">
           <Logo />
@@ -149,7 +156,7 @@ export default function Home() {
             <div className="bg-card text-card-foreground p-4 rounded-lg shadow space-y-6 flex-grow">
               <h2 className="text-lg font-semibold">Sound</h2>
               <div className="flex flex-col items-center gap-2">
-                {analyser && <Oscilloscope analyser={analyser} />}
+                {analyser && <MemoizedOscilloscope analyser={analyser} />}
               </div>
 
               <div className="space-y-4">
