@@ -23,7 +23,7 @@ Then, open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## 🌍 Live Demo
 
-Try it out here: **[tsfxr.app](https://tsfxr.app)**
+Try it out here: **[tsfxr.jdmnk.dev](https://tsfxr.jdmnk.dev)**
 
 ## 🙏 Credits
 
