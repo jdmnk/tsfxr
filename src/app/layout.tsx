@@ -22,6 +22,17 @@ export const metadata: Metadata = {
   title: title,
   description:
     "A TypeScript-powered 8-bit sound effect generator for games, apps, and creative projects. Easily generate, tweak, and export retro sound effects.",
+  icons: {
+    icon: [
+      { url: "/icon/favicon", sizes: "32x32", type: "image/png" },
+      { url: "/icon/small", sizes: "192x192", type: "image/png" },
+      { url: "/icon/large", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/icon/apple", type: "image/png" }],
+  },
+  openGraph: {
+    images: [{ url: "/icon/og", width: 1200, height: 630 }],
+  },
   authors: [{ name: APP_AUTHOR, url: APP_AUTHOR_URL }],
   applicationName: title,
   referrer: "origin-when-cross-origin",
