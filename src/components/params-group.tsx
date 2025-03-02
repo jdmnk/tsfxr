@@ -48,9 +48,9 @@ export function ParamsGroup({
         const max = 1;
         const value = params[paramName] ? params[paramName] : 0;
 
-        // @ts-ignore
+        // @ts-expect-error
         const convertFn = convert.sliders[paramName];
-        // @ts-ignore
+        // @ts-expect-error
         const unitsFn = convert.units[paramName];
 
         return (

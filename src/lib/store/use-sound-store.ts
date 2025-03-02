@@ -97,9 +97,9 @@ export const useSoundStore = create<SoundStore>((set, get) => {
         // Note: global parameters are not included in the b58 string
         newParams.fromB58(b58);
       } else {
-        // @ts-ignore
+        // @ts-expect-error
         if (typeof newParams[fx] === "function") {
-          // @ts-ignore
+          // @ts-expect-error
           newParams[fx]();
           fileName = `${fx}.wav`;
         }
