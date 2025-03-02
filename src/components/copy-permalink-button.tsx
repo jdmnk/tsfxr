@@ -1,13 +1,13 @@
 import { toast } from "sonner";
-import { Params } from "@/lib/sfxr/sfxr";
 import { Button } from "./ui/button";
 import { Link } from "lucide-react";
 
-export function CopyPermalinkButton({ params }: { params: Params }) {
+export function CopyPermalinkButton({ b58 }: { b58: string }) {
   // Copy permalink (b58) to clipboard.
   const handleCopyPermalink = async () => {
     try {
-      const permaLink = window.location.href + "#" + params.toB58();
+      const rootUrl = window.location.origin;
+      const permaLink = `${rootUrl}/#${b58}`;
       await navigator.clipboard.writeText(permaLink);
       toast.success("Permalink copied to clipboard.");
     } catch (error) {

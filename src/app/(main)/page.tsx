@@ -22,6 +22,7 @@ import { CopyPermalinkButton } from "@/components/copy-permalink-button";
 import { About } from "@/components/sections/about";
 import { Logo } from "@/components/logo";
 import { toast } from "sonner";
+import { LoadingPage } from "@/components/loading-page";
 
 const MemoizedOscilloscope = React.memo(Oscilloscope);
 const MemoizedWaveformBackground = React.memo(WaveformBackground);
@@ -35,11 +36,10 @@ export default function Home() {
     soundVol,
     sampleRate,
     sampleSize,
+    b58,
     setParams,
-    setSoundVol,
-    setSampleRate,
-    setSampleSize,
     play,
+    updateGlobalSetting,
     updateParam,
     generateSoundFromPreset,
     mutateParams,
@@ -50,14 +50,25 @@ export default function Home() {
 
   // On mount, generate the sound from the permalink preset (if any).
   useEffect(() => {
+    // Init initial params (this must be done outside the store because the sfxr library uses the window object)
+    const initialParams = new Params();
+    updateGlobalSetting("soundVol", initialParams.sound_vol);
+    updateGlobalSetting("sampleRate", initialParams.sample_rate);
+    updateGlobalSetting("sampleSize", initialParams.sample_size);
+
     const hash = window.location.hash;
 
+    // If there is a permalink, generate the sound from it.
     if (hash.length > 1) {
       try {
         generateSoundFromPreset(hash);
       } catch (error) {
         toast.error("Failed to load sound from permalink");
+        console.error("Failed to load sound from permalink", error);
       }
+    } else {
+      // If there is no permalink, generate the sound from the initial params.
+      setParams(initialParams);
     }
   }, []);
 
@@ -73,6 +84,10 @@ export default function Home() {
       console.error("Failed to import configuration:", error);
     }
   };
+
+  if (!params) {
+    return <LoadingPage />;
+  }
 
   return (
     <div className="w-full min-h-screen bg-background text-foreground relative">
@@ -174,8 +189,8 @@ export default function Home() {
                     step={0.001}
                     value={[soundVol ? soundVol : 0]}
                     onValueChange={(e) => {
-                      setSoundVol(e[0]);
-                      play();
+                      updateGlobalSetting("soundVol", e[0]);
+                      debouncedPlay();
                     }}
                     className="w-full"
                   />
@@ -189,7 +204,7 @@ export default function Home() {
                     options={["44100", "22050", "11025", "5512"]}
                     labels={["44k", "22k", "11k", "6k"]}
                     onChange={(value) => {
-                      setSampleRate(+value);
+                      updateGlobalSetting("sampleRate", +value);
                       play();
                     }}
                     value={sampleRate.toString()}
@@ -203,7 +218,7 @@ export default function Home() {
                     options={["16", "8"]}
                     labels={["16 bit", "8 bit"]}
                     onChange={(value) => {
-                      setSampleSize(+value);
+                      updateGlobalSetting("sampleSize", +value);
                       play();
                     }}
                     value={sampleSize.toString()}
@@ -220,7 +235,7 @@ export default function Home() {
               <div className="space-y-4">
                 <ExportConfigDialog params={params} />
                 <ImportConfigDialog handleImportConfig={handleImportConfig} />
-                <CopyPermalinkButton params={params} />
+                <CopyPermalinkButton b58={b58 ?? ""} />
               </div>
             </div>
           </div>
