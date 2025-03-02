@@ -1,4 +1,4 @@
-import { RIFFWAVE } from "@/lib/sfxr/riffwave";
+import { RIFFWAVE } from "./riffwave";
 
 // Define common parameter types
 type SynthDef = Record<string, number | string>;
@@ -157,10 +157,7 @@ export const waveforms: {
 
 // Define RIFFWave interface (you may want to put this in a separate file)
 interface RIFFWave extends RIFFWAVE {
-  Make(buffer: number[]): void;
   clipping: number;
-  buffer: number[];
-  dataURI: string;
   getAudio(): AudioElement;
 }
 

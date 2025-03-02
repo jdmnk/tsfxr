@@ -1,4 +1,4 @@
-import { Params, waveforms } from "@/lib/sfxr/sfxr";
+import { Params, waveforms, WaveType } from "@/lib/sfxr/sfxr";
 import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
 import { Badge } from "./ui/badge";
 import { UpdateParamFn } from "@/types";
@@ -13,7 +13,7 @@ export function WaveTypeToggle({
   return (
     <ToggleGroup
       value={params.wave_type.toString()}
-      onValueChange={(value) => updateParam("wave_type", +value)}
+      onValueChange={(value) => updateParam("wave_type", +value as WaveType)}
       className="gap-4"
     >
       <ToggleGroupItem className="flex-1" value={waveforms.SQUARE.toString()}>
