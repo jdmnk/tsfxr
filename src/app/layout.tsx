@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { APP_AUTHOR, APP_AUTHOR_URL, APP_NAME, APP_URL } from "@/lib/app.const";
+import { Providers } from "@/components/providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,6 +17,7 @@ const geistMono = Geist_Mono({
 const title = `${APP_NAME} - 8-bit Sound Effect Generator`;
 
 export const metadata: Metadata = {
+  metadataBase: new URL(APP_URL),
   title: title,
   description:
     "A TypeScript-powered 8-bit sound effect generator for games, apps, and creative projects. Easily generate, tweak, and export retro sound effects.",
@@ -69,12 +68,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content={APP_NAME} />
       </head>
       <body className={geistSans.className}>
-        <ThemeProvider attribute="class" defaultTheme="dark">
-          <TooltipProvider>
-            {children}
-            <Toaster />
-          </TooltipProvider>
-        </ThemeProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

@@ -15,7 +15,7 @@ import { WaveformBackground } from "@/components/waveform-background";
 import { WaveTypeToggle } from "@/components/wave-type-toggle";
 import { ManualSettings } from "@/components/sections/manual-settings";
 import { FileExport } from "@/components/sections/file-export";
-import { useSoundStore } from "@/lib/store/useSoundStore";
+import { useSoundStore } from "@/lib/store/use-sound-store";
 import { ExportConfigDialog } from "@/components/export-config-dialog";
 import { ImportConfigDialog } from "@/components/import-config-dialog";
 import { CopyPermalinkButton } from "@/components/copy-permalink-button";
