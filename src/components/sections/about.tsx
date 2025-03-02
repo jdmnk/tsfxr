@@ -8,11 +8,11 @@ export function About() {
       </h2>
       <div className="space-y-4 max-w-2xl mx-auto text-center text-foreground">
         <p>
-          This is an online 8-bit sound maker and sfx generator. All you need to
-          make retro sound effects in a web browser.{" "}
+          Make classic 8-bit sound effects in seconds—just tweak, play, and
+          save!{" "}
         </p>
         <p>
-          It's a modern port of{" "}
+          TSFXR is a modern port of{" "}
           <a
             href="https://github.com/chr15m/jsfxr"
             className="text-primary hover:underline"
