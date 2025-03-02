@@ -15,7 +15,7 @@ import { Upload, AlertCircle, Check } from "lucide-react";
 export function ImportConfigDialog({
   handleImportConfig,
 }: {
-  handleImportConfig: (config: string) => void;
+  handleImportConfig: (config: object) => void;
 }) {
   const [importConfig, setImportConfig] = useState("");
   const [importError, setImportError] = useState<string | null>(null);

@@ -1,4 +1,4 @@
-import { Params } from "@/lib/sfxr/sfxr";
+import { Params, RIFFWave } from "@/lib/sfxr/sfxr";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { Info } from "lucide-react";
 import { Button } from "../ui/button";
@@ -9,7 +9,7 @@ export function FileExport({
   fileName,
 }: {
   params: Params;
-  sound: any;
+  sound: RIFFWave;
   fileName: string;
 }) {
   const fileSize = Math.round(sound.wav.length / 1024) + "kB";

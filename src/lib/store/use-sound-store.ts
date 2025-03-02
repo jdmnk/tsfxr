@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Params, SoundEffect } from "@/lib/sfxr/sfxr";
+import { AudioElement, Params, RIFFWave, SoundEffect } from "@/lib/sfxr/sfxr";
 
 type SoundStore = {
   // Core sound parameters
@@ -11,8 +11,8 @@ type SoundStore = {
   sampleSize: number;
 
   // Generated audio state
-  sound: SoundEffect | null;
-  audio: any;
+  sound: RIFFWave | null;
+  audio: AudioElement | null;
   analyser: AnalyserNode | null;
   b58: string | null;
 
@@ -97,9 +97,9 @@ export const useSoundStore = create<SoundStore>((set, get) => {
         // Note: global parameters are not included in the b58 string
         newParams.fromB58(b58);
       } else {
-        // @ts-expect-error
+        // @ts-expect-error sfxr.js
         if (typeof newParams[fx] === "function") {
-          // @ts-expect-error
+          // @ts-expect-error sfxr.js
           newParams[fx]();
           fileName = `${fx}.wav`;
         }

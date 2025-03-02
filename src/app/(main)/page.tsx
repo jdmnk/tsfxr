@@ -70,9 +70,11 @@ export default function Home() {
       // If there is no permalink, generate the sound from the initial params.
       setParams(initialParams);
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleImportConfig = (config: any) => {
+  const handleImportConfig = (config: object) => {
     try {
       if (config) {
         const newParams = new Params();
@@ -85,7 +87,7 @@ export default function Home() {
     }
   };
 
-  if (!params) {
+  if (!params || !sound || !analyser) {
     return <LoadingPage />;
   }
 
@@ -171,7 +173,7 @@ export default function Home() {
             <div className="bg-card text-card-foreground p-4 rounded-lg shadow space-y-6 flex-grow">
               <h2 className="text-lg font-semibold">Sound</h2>
               <div className="flex flex-col items-center gap-2">
-                {analyser && <MemoizedOscilloscope analyser={analyser} />}
+                <MemoizedOscilloscope analyser={analyser} />
               </div>
 
               <div className="space-y-4">
