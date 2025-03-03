@@ -167,16 +167,3 @@ interface AudioElement extends HTMLAudioElement {
   play(): AudioElement;
   analyser: AnalyserNode;
 }
-
-// Define unmute types
-interface UnmuteHandle {
-  dispose(): void;
-}
-
-export function initializeUnmute(
-  context: AudioContext,
-  allowBackgroundPlayback?: boolean,
-  forceIOSBehavior?: boolean
-): UnmuteHandle;
-
-export function disposeUnmute(): void;
