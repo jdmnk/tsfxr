@@ -1,4 +1,5 @@
 import RIFFWAVE from "./riffwave";
+import { unmute } from "../utils/unmute";
 
 // Wave shapes
 var SQUARE = 0;
@@ -11,6 +12,10 @@ var TRIANGLE = 4;
 var masterVolume = 1;
 
 var OVERSAMPLING = 8;
+
+// Audio context and unmute handle
+var _actx = null;
+var _unmuteHandle = null;
 
 /*** Core data structure ***/
 
@@ -890,7 +895,6 @@ SoundEffect.prototype.generate = function () {
   return wave;
 };
 
-var _actx = null;
 var _sfxr_getAudioFn = function (wave) {
   return function () {
     var actx = null;
@@ -899,6 +903,10 @@ var _sfxr_getAudioFn = function (wave) {
         _actx = new AudioContext();
       } else if ("webkitAudioContext" in window) {
         _actx = new webkitAudioContext();
+      }
+      // Initialize unmute when audio context is first created
+      if (_actx && !_unmuteHandle) {
+        _unmuteHandle = unmute(_actx);
       }
     }
     actx = _actx;
