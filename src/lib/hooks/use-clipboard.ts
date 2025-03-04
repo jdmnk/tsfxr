@@ -66,6 +66,7 @@ export const useClipboard = () => {
           throw new Error("execCommand('copy') failed");
         } catch (err) {
           container.removeChild(textArea);
+          console.error("Fallback copy method failed", err);
           throw new Error("Fallback copy method failed");
         }
       } catch (err) {
