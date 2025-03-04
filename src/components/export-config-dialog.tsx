@@ -15,25 +15,20 @@ import { toast } from "sonner";
 
 export function ExportConfigDialog({ params }: { params: Params }) {
   const exportTextAreaRef = useRef<HTMLTextAreaElement>(null);
-  const dialogContentRef = useRef<HTMLDivElement>(null);
   const { copyToClipboard, isCopied, resetCopyStatus } = useClipboard();
 
   const handleExportConfig = () => {
     return JSON.stringify(params, null, 2);
   };
 
-  const handleCopyExport = async () => {
+  const handleCopyExport = async (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
     try {
       const configString = handleExportConfig();
-
-      // Try to copy using the dialog content as container
-      const success = await copyToClipboard(
-        configString,
-        dialogContentRef.current || undefined
-      );
+      const success = await copyToClipboard(configString, event.currentTarget);
 
       if (success) {
-        toast.success("Configuration copied to clipboard");
         setTimeout(resetCopyStatus, 2000);
       } else {
         // If copying failed, try to select the text for manual copying
@@ -75,10 +70,7 @@ export function ExportConfigDialog({ params }: { params: Params }) {
           <Download className="mr-2 h-4 w-4" /> Export Config
         </Button>
       </DialogTrigger>
-      <DialogContent
-        ref={dialogContentRef}
-        className="bg-background text-foreground"
-      >
+      <DialogContent className="bg-background text-foreground">
         <DialogHeader>
           <DialogTitle>Export Configuration</DialogTitle>
         </DialogHeader>
