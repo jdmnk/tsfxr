@@ -33,7 +33,6 @@ export function ImportConfigDialog({
       handleImportConfig(importedConfig);
     } catch (error) {
       setImportError("Invalid JSON format");
-      console.error("Failed to import configuration:", error);
     }
   };
 
