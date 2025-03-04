@@ -1,17 +1,20 @@
 import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { Link } from "lucide-react";
+import { useClipboard } from "@/lib/hooks/use-clipboard";
 
 export function CopyPermalinkButton({ b58 }: { b58: string }) {
+  const { copyToClipboard } = useClipboard();
+
   // Copy permalink (b58) to clipboard.
   const handleCopyPermalink = async () => {
-    try {
-      const rootUrl = window.location.origin;
-      const permaLink = `${rootUrl}/#${b58}`;
-      await navigator.clipboard.writeText(permaLink);
+    const rootUrl = window.location.origin;
+    const permaLink = `${rootUrl}/#${b58}`;
+    const success = await copyToClipboard(permaLink);
+
+    if (success) {
       toast.success("Permalink copied to clipboard.");
-    } catch (error) {
-      console.error("Failed to copy permalink:", error);
+    } else {
       toast.error("Copy failed", {
         description: "There was an error copying the permalink.",
       });
