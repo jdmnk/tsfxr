@@ -31,9 +31,8 @@ export function ImportConfigDialog({
       const importedConfig = JSON.parse(configString);
       setImportSuccess(true);
       handleImportConfig(importedConfig);
-    } catch (error) {
+    } catch {
       setImportError("Invalid JSON format");
-      console.error("Failed to import configuration:", error);
     }
   };
 

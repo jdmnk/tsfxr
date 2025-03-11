@@ -9,21 +9,44 @@ import {
 } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
-import { useRef, useState } from "react";
+import { useRef } from "react";
+import { useClipboard } from "@/lib/hooks/use-clipboard";
+import { toast } from "sonner";
 
 export function ExportConfigDialog({ params }: { params: Params }) {
-  const [exportCopied, setExportCopied] = useState(false);
   const exportTextAreaRef = useRef<HTMLTextAreaElement>(null);
+  const { copyToClipboard, isCopied, resetCopyStatus } = useClipboard();
+
   const handleExportConfig = () => {
     return JSON.stringify(params, null, 2);
   };
 
-  const handleCopyExport = async () => {
-    if (exportTextAreaRef.current) {
-      exportTextAreaRef.current.select();
-      await navigator.clipboard.writeText(exportTextAreaRef.current.value);
-      setExportCopied(true);
-      setTimeout(() => setExportCopied(false), 2000); // Reset the msg after 2 seconds
+  const handleCopyExport = async (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    try {
+      const configString = handleExportConfig();
+      const success = await copyToClipboard(configString, event.currentTarget);
+
+      if (success) {
+        setTimeout(resetCopyStatus, 2000);
+      } else {
+        // If copying failed, try to select the text for manual copying
+        if (exportTextAreaRef.current) {
+          exportTextAreaRef.current.select();
+        }
+        toast.error("Failed to copy", {
+          description: "Please press Cmd/Ctrl+C to copy the selected text",
+        });
+      }
+    } catch (err) {
+      console.error("Copy failed:", err);
+      if (exportTextAreaRef.current) {
+        exportTextAreaRef.current.select();
+      }
+      toast.error("Failed to copy", {
+        description: "Please press Cmd/Ctrl+C to copy the selected text",
+      });
     }
   };
 
@@ -63,14 +86,14 @@ export function ExportConfigDialog({ params }: { params: Params }) {
             onClick={handleCopyExport}
             className="absolute top-2 right-2"
           >
-            {exportCopied ? (
+            {isCopied ? (
               <Check className="h-4 w-4" />
             ) : (
               <Copy className="h-4 w-4" />
             )}
           </Button>
         </div>
-        {exportCopied && (
+        {isCopied && (
           <p className="text-sm text-green-500 mt-2">Copied to clipboard!</p>
         )}
         <Button onClick={handleDownloadConfig} className="mt-4">
