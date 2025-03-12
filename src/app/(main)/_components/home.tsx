@@ -23,6 +23,7 @@ import { About } from "@/components/sections/about";
 import { Logo } from "@/components/logo";
 import { toast } from "sonner";
 import { LoadingPage } from "@/components/loading-page";
+import { Keyboard } from "@/components/keyboard";
 
 const MemoizedOscilloscope = React.memo(Oscilloscope);
 const MemoizedWaveformBackground = React.memo(WaveformBackground);
@@ -85,6 +86,14 @@ export default function Main() {
     } catch (error) {
       console.error("Failed to import configuration:", error);
     }
+  };
+
+  const handleNotePlay = (frequency: number) => {
+    // Convert frequency to p_base_freq value (normalized between 0 and 1)
+    // Using A4 (440Hz) as reference
+    const normalizedFreq = Math.min(Math.max(frequency / 880, 0), 1);
+    updateParam("p_base_freq", normalizedFreq);
+    play();
   };
 
   if (!params || !sound || !analyser) {
@@ -241,6 +250,10 @@ export default function Main() {
               </div>
             </div>
           </div>
+        </div>
+
+        <div className="mt-6">
+          <Keyboard onNotePlay={handleNotePlay} />
         </div>
 
         <About />

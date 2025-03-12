@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { APP_AUTHOR, APP_AUTHOR_URL, APP_NAME, APP_URL } from "@/lib/app.const";
 import { Providers } from "@/components/providers";
+import { Analytics } from "@vercel/analytics/react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -71,6 +72,7 @@ export default function RootLayout({
       <body className={geistSans.className}>
         <Providers>{children}</Providers>
       </body>
+      <Analytics />
     </html>
   );
 }
