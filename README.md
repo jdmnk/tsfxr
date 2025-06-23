@@ -1,14 +1,10 @@
 # TSFXR – Game Sound Effects Generator
 
-A modern game sound effects generator built with **TypeScript, React, Next.js, shadcn, Tailwind and Zustand**.
-
 Inspired by the amazing [jsfxr](https://github.com/chr15m/jsfxr).
 
 ## About
 
-TSFXR is a web app for generating retro-style game sound effects.
-
-A passion project born from my love of game audio and modern web development.
+TSFXR is a retro game sound effects generator built with **TypeScript, React, Next.js, shadcn, Tailwind and Zustand**. This passion project was born from my love of game audio and modern web development, bringing classic sfxr-style sound generation to the modern web.
 
 ## Getting Started
 
